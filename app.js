@@ -588,10 +588,16 @@ function openProject(projectId) {
   const repoBtn = viewer.querySelector('.project-repo-btn');
   if (repoBtn) repoBtn.style.display = 'none';
 
-  const waBtn = viewer.querySelector('.project-wa-btn');
-  if (waBtn) {
-    waBtn.href = `https://wa.me/5521981568906?text=${encodeURIComponent('Olá Ademir! Vi seu portfólio Windows 95 e quero conversar sobre o projeto: ' + p.title.split('[')[0].trim())}`;
-  }
+  const cleanTitle = p.title.split('[')[0].trim();
+  const waMsg = `Olá Ademir! Vi seu portfólio Windows 95 e quero conversar sobre o projeto: ${cleanTitle}`;
+  const waUrl = `https://wa.me/5521981568906?text=${encodeURIComponent(waMsg)}`;
+
+  viewer.querySelectorAll('.project-wa-btn').forEach(btn => {
+    btn.href = waUrl;
+    btn.setAttribute('href', waUrl);
+    btn.target = '_blank';
+    btn.rel = 'noopener noreferrer';
+  });
 
   openWindow('win-project-viewer');
 }

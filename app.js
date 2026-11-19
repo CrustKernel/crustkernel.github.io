@@ -406,29 +406,43 @@ function openWindow(winId) {
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
     const isHomeWindow = (winId === 'win-welcome' || winId === 'win-cdplayer');
+    const isDialog = (winId === 'win-shutdown');
 
-    document.querySelectorAll('.win-window').forEach(other => {
-      if (other.id !== winId) {
-        // Na tela inicial do mobile, permite que Plaza.one e Bem-vindo fiquem abertas juntas!
-        if (isHomeWindow && (other.id === 'win-welcome' || other.id === 'win-cdplayer')) {
-          return;
-        }
-        if (other.id === 'win-pinball') {
-          const iframe = other.querySelector('iframe');
-          if (iframe && iframe.contentWindow) {
-            try { iframe.contentWindow.postMessage('mute', '*'); } catch(e){}
+    if (!isDialog) {
+      document.querySelectorAll('.win-window').forEach(other => {
+        if (other.id !== winId && other.id !== 'win-shutdown') {
+          // Na tela inicial do mobile, permite que Plaza.one e Bem-vindo fiquem abertas juntas!
+          if (isHomeWindow && (other.id === 'win-welcome' || other.id === 'win-cdplayer')) {
+            return;
           }
+          if (other.id === 'win-pinball') {
+            const iframe = other.querySelector('iframe');
+            if (iframe && iframe.contentWindow) {
+              try { iframe.contentWindow.postMessage('mute', '*'); } catch(e){}
+            }
+          }
+          other.style.display = 'none';
+          other.classList.remove('active');
+          openWindows.delete(other.id);
         }
-        other.style.display = 'none';
-        other.classList.remove('active');
-        openWindows.delete(other.id);
-      }
-    });
+      });
+    }
 
-    if (!isHomeWindow) {
+    if (isDialog) {
+      // Diálogo centralizado no mobile
+      win.style.left = '50%';
+      win.style.top = '50%';
+      win.style.transform = 'translate(-50%, -50%)';
+      win.style.width = '90vw';
+      win.style.maxWidth = '360px';
+      win.style.height = 'auto';
+      win.style.maxHeight = '90vh';
+      win.style.zIndex = '2500';
+    } else if (!isHomeWindow) {
       // Janelas de tela cheia (jogos, pastas, etc.)
       win.style.left = '0';
       win.style.top = '0';
+      win.style.transform = 'none';
       win.style.width = '100vw';
       win.style.maxWidth = '100vw';
       win.style.height = 'calc(100vh - 36px)';
@@ -439,6 +453,7 @@ function openWindow(winId) {
       // Janelas empilhadas na tela inicial (Plaza no topo, Bem-vindo logo abaixo)
       win.style.left = 'auto';
       win.style.top = 'auto';
+      win.style.transform = 'none';
       win.style.width = '100%';
       win.style.maxWidth = '100%';
       win.style.height = 'auto';
@@ -516,11 +531,12 @@ function closeWindow(winId, event) {
   }
 
   win.style.display = 'none';
+  win.style.transform = 'none';
   win.classList.remove('active');
   openWindows.delete(winId);
 
   // No mobile, ao fechar um jogo ou pasta, restaura a tela inicial (Plaza + Bem-vindo)
-  if (window.innerWidth <= 768 && winId !== 'win-welcome' && winId !== 'win-cdplayer') {
+  if (window.innerWidth <= 768 && winId !== 'win-welcome' && winId !== 'win-cdplayer' && winId !== 'win-shutdown') {
     openWindow('win-cdplayer');
     openWindow('win-welcome');
   }
@@ -1017,30 +1033,77 @@ function initCDPlayer() {
   }
 }
 
-// 7. DESLIGAR O COMPUTADOR
+// 7. DESLIGAR E REINICIAR O COMPUTADOR
+function handleShutdownOrRestart() {
+  const restartOpt = document.getElementById('opt-restart');
+  const isRestart = restartOpt && restartOpt.checked;
+
+  closeWindow('win-shutdown');
+
+  if (isRestart) {
+    rebootSystem();
+  } else {
+    triggerShutdown();
+  }
+}
+window.handleShutdownOrRestart = handleShutdownOrRestart;
+
 function triggerShutdown() {
+  // Pausa a rádio imediatamente
+  toggleRadio(false);
+
   const overlay = document.getElementById('shutdown-overlay');
   if (overlay) {
-    closeWindow('win-shutdown');
     overlay.style.display = 'flex';
     playAudio('chord');
   }
 }
+window.triggerShutdown = triggerShutdown;
 
-function restartSystem() {
+function rebootSystem() {
+  // Pausa a rádio imediatamente
+  toggleRadio(false);
+
+  // Fecha qualquer overlay ativo
   const overlay = document.getElementById('shutdown-overlay');
   if (overlay) overlay.style.display = 'none';
-  const boot = document.getElementById('boot-screen');
-  if (boot) {
-    boot.classList.remove('fade-out');
+
+  // Fecha todas as janelas abertas
+  document.querySelectorAll('.win-window').forEach(w => {
+    w.style.display = 'none';
+    w.style.transform = 'none';
+    w.classList.remove('active');
+  });
+  openWindows.clear();
+  updateTaskbar();
+
+  // Exibe tela de boot imediatamente com animação e som
+  const bootScreen = document.getElementById('boot-screen');
+  if (bootScreen) {
+    bootScreen.style.display = 'flex';
+    bootScreen.style.opacity = '1';
+    bootScreen.style.visibility = 'visible';
+    bootScreen.style.pointerEvents = 'all';
+    bootScreen.classList.remove('fade-out');
+
+    playAudio('startup');
+
     setTimeout(() => {
-      boot.classList.add('fade-out');
-      playAudio('startup');
-      openWindow('win-cdplayer');
-      openWindow('win-welcome');
+      bootScreen.classList.add('fade-out');
+      startRadioStream();
+      setTimeout(() => {
+        openWindow('win-cdplayer');
+        openWindow('win-welcome');
+      }, 250);
     }, 1800);
   }
 }
+window.rebootSystem = rebootSystem;
+
+function restartSystem() {
+  rebootSystem();
+}
+window.restartSystem = restartSystem;
 
 // 8. INICIALIZAÇÃO GERAL
 document.addEventListener('DOMContentLoaded', () => {

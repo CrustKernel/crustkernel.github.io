@@ -384,9 +384,13 @@ function openWindow(winId) {
     // Windows 96 Mobile Edition: apenas UMA janela aberta por vez!
     document.querySelectorAll('.win-window').forEach(other => {
       if (other.id !== winId) {
-        other.style.display = 'none';
-        other.classList.remove('active');
-        openWindows.delete(other.id);
+        if (other.id === 'win-pinball') {
+          closeWindow('win-pinball');
+        } else {
+          other.style.display = 'none';
+          other.classList.remove('active');
+          openWindows.delete(other.id);
+        }
       }
     });
 
@@ -403,6 +407,18 @@ function openWindow(winId) {
     // Desktop: posicionamento inteligente
     if (!windowPositions[winId]) {
       findSmartPosition(win);
+    }
+  }
+
+  // Se for o Pinball sendo aberto ou restaurado, garante que o iframe e áudio estejam ativos
+  if (winId === 'win-pinball') {
+    const iframe = win.querySelector('iframe');
+    if (iframe) {
+      if (!iframe.src || iframe.src.endsWith('about:blank')) {
+        iframe.src = 'games/pinball/index.html';
+      } else if (iframe.contentWindow) {
+        try { iframe.contentWindow.postMessage('unmute', '*'); } catch(e){}
+      }
     }
   }
 
@@ -431,11 +447,24 @@ function closeWindow(winId, event) {
     document.exitFullscreen().catch(() => {});
   }
 
-  // Encerra imediatamente qualquer iframe de jogo (Pinball, Paciência, SkiFree),
-  // finalizando o processo WebAssembly e parando todos os sons na hora!
-  const iframe = win.querySelector('iframe');
-  if (iframe) {
-    iframe.src = 'about:blank';
+  // Encerra imediatamente qualquer som ou processo de Pinball
+  if (winId === 'win-pinball') {
+    const iframe = win.querySelector('iframe');
+    if (iframe) {
+      try {
+        if (iframe.contentWindow && typeof iframe.contentWindow.stopPinballAudio === 'function') {
+          iframe.contentWindow.stopPinballAudio();
+        }
+        iframe.contentWindow.postMessage('stop', '*');
+      } catch(e) {}
+      iframe.src = 'about:blank';
+    }
+  } else {
+    // Encerra qualquer outro iframe de jogo
+    const iframe = win.querySelector('iframe');
+    if (iframe) {
+      iframe.src = 'about:blank';
+    }
   }
 
   win.style.display = 'none';
@@ -449,6 +478,19 @@ window.closeWindow = closeWindow;
 function minimizeWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
+
+  if (winId === 'win-pinball') {
+    const iframe = win.querySelector('iframe');
+    if (iframe && iframe.contentWindow) {
+      try {
+        if (typeof iframe.contentWindow.toggleMute === 'function') {
+          iframe.contentWindow.toggleMute(true);
+        }
+        iframe.contentWindow.postMessage('mute', '*');
+      } catch(e) {}
+    }
+  }
+
   win.classList.add('minimized');
   win.classList.remove('active');
   updateTaskbar();
@@ -611,8 +653,14 @@ function openProject(projectId) {
 function openGame(gameId) {
   if (gameId === 'pinball') {
     const win = document.getElementById('win-pinball');
-    const frame = win.querySelector('iframe');
-    frame.src = 'games/pinball/index.html';
+    const frame = document.getElementById('pinball-frame') || (win ? win.querySelector('iframe') : null);
+    if (frame) {
+      if (!frame.src || frame.src.endsWith('about:blank')) {
+        frame.src = 'games/pinball/index.html';
+      } else if (frame.contentWindow) {
+        try { frame.contentWindow.postMessage('unmute', '*'); } catch(e){}
+      }
+    }
     openWindow('win-pinball');
   } else if (gameId === 'minesweeper') {
     openWindow('win-minesweeper');
@@ -631,13 +679,29 @@ function openGame(gameId) {
     openWindow('win-skifree');
   }
 }
+window.openGame = openGame;
+
+function togglePinballSound(btnEl) {
+  const frame = document.getElementById('pinball-frame') || document.querySelector('#win-pinball iframe');
+  if (frame && frame.contentWindow) {
+    try {
+      if (typeof frame.contentWindow.toggleMute === 'function') {
+        const isMuted = frame.contentWindow.toggleMute();
+        if (btnEl) btnEl.innerHTML = isMuted ? '<u>S</u>om [🔇]' : '<u>S</u>om [🔊]';
+        return;
+      }
+    } catch(e) {}
+    frame.contentWindow.postMessage('mute', '*');
+  }
+}
+window.togglePinballSound = togglePinballSound;
 
 // ============================================================================
 // 6. RÁDIO NIGHTWAVE PLAZA (WIDGET OFICIAL & API AO VIVO)
 // ============================================================================
 let radioAudio = null;
 let isRadioPlaying = false;
-let currentVolume = 0.25; // 25% volume inicial confortável e claramente audível
+let currentVolume = 0.50; // 50% de volume inicial claro e audível
 let currentSongData = null;
 let currentSongPosition = 0;
 let currentSongDuration = 0;
@@ -659,8 +723,8 @@ async function fetchPlazaStatus() {
     if (!data || !data.song) return;
 
     currentSongData = data.song;
-    currentSongPosition = data.song.position || 0;
-    currentSongDuration = data.song.length || 0;
+    currentSongPosition = Math.floor(data.song.position || 0);
+    currentSongDuration = Math.floor(data.song.length || 0);
 
     const artEl = document.getElementById('plaza-artwork');
     const artistEl = document.getElementById('plaza-artist');
@@ -672,13 +736,13 @@ async function fetchPlazaStatus() {
     if (artEl && data.song.artwork_src) {
       artEl.src = data.song.artwork_src;
     }
-    if (artistEl) artistEl.textContent = data.song.artist || 'Nightwave Plaza';
-    if (titleEl) titleEl.textContent = data.song.title || 'Vaporwave Radio';
+    if (artistEl) artistEl.textContent = data.song.artist || 'WiZMONTE';
+    if (titleEl) titleEl.textContent = data.song.title || 'Come Home';
     if (timerEl) {
       timerEl.textContent = `${formatTime(currentSongPosition)} / ${formatTime(currentSongDuration)}`;
     }
     if (reactionsEl) reactionsEl.textContent = data.song.reactions || '1';
-    if (listenersEl) listenersEl.textContent = `${data.listeners || 180} ouvinte(s).`;
+    if (listenersEl) listenersEl.textContent = `${data.listeners || 181} ouvinte(s).`;
   } catch (err) {
     console.warn('Erro ao consultar status da rádio Plaza.one:', err);
   }
@@ -703,7 +767,7 @@ function startTimerTicker() {
 function startRadioStream() {
   if (!radioAudio) {
     radioAudio = new Audio();
-    radioAudio.crossOrigin = 'anonymous';
+    // SEM crossOrigin = 'anonymous' para permitir streaming sem bloqueio de CORS do Icecast
     radioAudio.preload = 'auto';
 
     radioAudio.addEventListener('playing', () => {
@@ -718,14 +782,17 @@ function startRadioStream() {
       console.warn('Radio stream error:', e);
       if (isRadioPlaying) {
         setTimeout(() => {
-          radioAudio.src = 'https://radio.plaza.one/mp3?' + Date.now();
-          radioAudio.play().catch(console.warn);
+          if (radioAudio && isRadioPlaying) {
+            radioAudio.src = 'https://radio.plaza.one/mp3?nocache=' + Date.now();
+            radioAudio.play().catch(console.warn);
+          }
         }, 1500);
       }
     });
   }
 
-  radioAudio.src = 'https://radio.plaza.one/mp3?' + Date.now();
+  // Atribui stream oficial com cache-busting
+  radioAudio.src = 'https://radio.plaza.one/mp3?nocache=' + Date.now();
   radioAudio.volume = currentVolume;
 
   const playPromise = radioAudio.play();
@@ -735,6 +802,9 @@ function startRadioStream() {
       updatePlayBtn(true);
     }).catch(err => {
       console.warn('Playback prevented by browser:', err);
+      // Mantém estado responsivo caso o browser exija clique direto
+      isRadioPlaying = false;
+      updatePlayBtn(false);
     });
   }
 }
@@ -745,14 +815,20 @@ function toggleRadio(forceState) {
     return;
   }
   if (forceState === false) {
-    if (radioAudio) radioAudio.pause();
+    if (radioAudio) {
+      radioAudio.pause();
+      radioAudio.src = '';
+    }
     isRadioPlaying = false;
     updatePlayBtn(false);
     return;
   }
 
   if (isRadioPlaying) {
-    if (radioAudio) radioAudio.pause();
+    if (radioAudio) {
+      radioAudio.pause();
+      radioAudio.src = '';
+    }
     isRadioPlaying = false;
     updatePlayBtn(false);
   } else {
@@ -899,4 +975,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!bootScreen.classList.contains('fade-out')) dismissBoot();
     }, { once: true });
   }
+
+  // Pausa áudio de Pinball quando o usuário minimiza o navegador ou bloqueia o celular
+  document.addEventListener('visibilitychange', () => {
+    const pinballWin = document.getElementById('win-pinball');
+    const iframe = pinballWin ? pinballWin.querySelector('iframe') : null;
+    if (iframe && iframe.contentWindow) {
+      try {
+        if (document.hidden) {
+          iframe.contentWindow.postMessage('mute', '*');
+        } else if (openWindows.has('win-pinball') && !pinballWin.classList.contains('minimized')) {
+          iframe.contentWindow.postMessage('unmute', '*');
+        }
+      } catch(e) {}
+    }
+  });
 });

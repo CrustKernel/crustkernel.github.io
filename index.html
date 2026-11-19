@@ -9,7 +9,7 @@
   <title>Ademir Júnior • Portfólio Interativo Windows 95 Edition</title>
   <meta name="description" content="Portfólio interativo retrô do desenvolvedor Full Stack Ademir Júnior. Experiência autêntica de Windows 95 no navegador com 3D Pinball, Campo Minado e projetos reais.">
   <link rel="icon" type="image/png" href="assets/icons/windows-0.png">
-  <link rel="stylesheet" href="style.css?v=20261119c">
+  <link rel="stylesheet" href="style.css?v=20261119e">
 </head>
 <body>
 
@@ -371,12 +371,13 @@
 
       <div class="win-menubar">
         <span class="win-menu-item" onclick="openGame('pinball')"><u>N</u>ovo Jogo</span>
+        <span class="win-menu-item" id="pinball-menu-sound" onclick="togglePinballSound(this)"><u>S</u>om [🔊]</span>
         <span class="win-menu-item" onclick="maximizeWindow('win-pinball')"><u>T</u>ela Cheia</span>
         <span class="win-menu-item" onclick="closeWindow('win-pinball')"><u>S</u>air [✕]</span>
       </div>
 
       <div style="flex: 1; background: #000000; position: relative;">
-        <iframe src="about:blank" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen" title="3D Pinball"></iframe>
+        <iframe id="pinball-frame" src="about:blank" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen" title="3D Pinball"></iframe>
       </div>
     </div>
 
@@ -441,7 +442,7 @@
     </div>
 
     <!-- JANELA 9: RÁDIO NIGHTWAVE PLAZA (WIDGET OFICIAL PLAZA.ONE) -->
-    <div id="win-cdplayer" class="win-window" style="width: 480px; display: none;">
+    <div id="win-cdplayer" class="win-window" style="width: 512px; display: none;">
       <div class="win-titlebar">
         <div class="win-titlebar-left">
           <img src="assets/plaza_icons/ball.png" alt="Nightwave Plaza">
@@ -457,62 +458,60 @@
       <div class="win-menubar">
         <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>S</u>obre</a></span>
         <span class="win-menu-item"><a href="https://plaza.one/history" target="_blank" style="color: inherit; text-decoration: none;"><u>H</u>istórico</a></span>
-        <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>M</u>ais Populares</a></span>
+        <span class="win-menu-item"><a href="https://plaza.one/ratings" target="_blank" style="color: inherit; text-decoration: none;"><u>M</u>ais Populares</a></span>
         <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>A</u>poie-nos</a></span>
       </div>
 
-      <div style="padding: 8px; background: #c0c0c0;">
-        <div class="win-inset plaza-wrapper" style="padding: 10px; background: #c0c0c0; display: flex; gap: 12px; align-items: center;">
+      <div style="padding: 6px; background: #c0c0c0;">
+        <div class="win-inset plaza-wrapper">
           <!-- Artwork da Música (Capinha) -->
-          <div class="plaza-artwork-box" style="width: 124px; height: 124px; min-width: 124px; border: 2px inset #ffffff; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 1px 2px #000;">
-            <img id="plaza-artwork" src="assets/plaza_icons/ball_2x.png" alt="Capa da Música" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          <div class="plaza-artwork-box">
+            <img id="plaza-artwork" src="assets/plaza_icons/ball_2x.png" alt="Capa da Música">
           </div>
 
           <!-- Informações e Controles -->
-          <div class="plaza-controls-col" style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; height: 124px;">
+          <div class="plaza-controls-col">
             <div>
-              <div id="plaza-artist" style="font-size: 16px; font-weight: bold; color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.2px;">
-                Nightwave Plaza
-              </div>
-              <div id="plaza-title" style="font-size: 13.5px; color: #222; font-family: 'Segoe UI', Tahoma, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
-                Vaporwave Radio 24/7
-              </div>
+              <div id="plaza-artist">Nightwave Plaza</div>
+              <div id="plaza-title">Vaporwave Radio 24/7</div>
             </div>
 
             <!-- Timer e Slider de Volume -->
-            <div class="plaza-timer-row" style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
-              <div class="win-inset" style="background: #c0c0c0; padding: 3px 6px; font-family: 'Consolas', monospace; font-size: 13px; font-weight: bold; color: #000; text-align: center; min-width: 110px;">
+            <div class="plaza-timer-row">
+              <div class="plaza-timer-box">
                 <span id="plaza-timer">00:00 / 00:00</span>
               </div>
-              <div style="display: flex; align-items: center; gap: 4px; flex: 1;">
-                <input type="range" id="plaza-vol-slider" min="0" max="1" step="0.01" value="0.25" style="width: 100%; cursor: pointer;">
-                <span style="font-size: 14px; user-select: none;">🔊</span>
+              <div class="plaza-slider-wrap">
+                <input type="range" id="plaza-vol-slider" class="win95-trackbar" min="0" max="1" step="0.01" value="0.5" title="Volume da Rádio">
+                <img src="assets/icons/loudspeaker_rays-0.png" style="width: 18px; height: 18px; image-rendering: pixelated; flex-shrink: 0;" alt="Volume">
               </div>
             </div>
 
             <!-- Botões de Ação estilo Plaza -->
-            <div class="plaza-btns-row" style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
-              <button id="plaza-btn-play" class="win-btn" style="min-width: 70px; height: 26px; font-weight: bold;" onclick="toggleRadio()">
+            <div class="plaza-btns-row">
+              <button id="plaza-btn-play" class="win-btn plaza-ctrl-btn" style="min-width: 86px; font-weight: bold;" onclick="toggleRadio()">
                 Tocar
               </button>
-              <button id="plaza-btn-heart" class="win-btn" style="min-width: 52px; height: 26px; display: flex; align-items: center; justify-content: center; gap: 4px;" onclick="likeCurrentSong()">
+              <button id="plaza-btn-heart" class="win-btn plaza-ctrl-btn" style="min-width: 58px; gap: 4px;" onclick="likeCurrentSong()" title="Curtir Música">
                 <img src="assets/plaza_icons/heart_gray.png" id="plaza-heart-icon" style="width: 14px; height: 14px;" alt="">
                 <span id="plaza-reactions">1</span>
               </button>
-              <a href="https://plaza.one/history" target="_blank" class="win-btn" style="width: 32px; height: 26px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Histórico de Músicas no Plaza.one">
-                <img src="assets/plaza_icons/person.png" style="width: 15px; height: 15px;" alt="">
+              <a href="https://plaza.one/history" target="_blank" class="win-btn plaza-ctrl-btn" style="width: 38px;" title="Histórico de Músicas no Plaza.one">
+                <img src="assets/plaza_icons/person.png" style="width: 16px; height: 16px; image-rendering: pixelated;" alt="">
               </a>
-              <a href="https://plaza.one" target="_blank" class="win-btn" style="width: 32px; height: 26px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Abrir Plaza.one Oficial">
-                <img src="assets/plaza_icons/settings_gear.png" style="width: 15px; height: 15px;" alt="">
+              <a href="https://plaza.one" target="_blank" class="win-btn plaza-ctrl-btn" style="width: 38px;" title="Abrir Plaza.one Oficial">
+                <img src="assets/plaza_icons/settings_gear.png" style="width: 16px; height: 16px; image-rendering: pixelated;" alt="">
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="win-statusbar" style="display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; font-size: 11.5px; color: #222;">
-        <span id="plaza-listeners">181 ouvinte(s).</span>
-        <span id="plaza-audio-status" style="color: #008000; font-weight: bold; font-size: 11px;">● AO VIVO</span>
+      <div class="win-statusbar" style="padding: 2px 3px; display: flex; align-items: center; justify-content: space-between;">
+        <div class="win-statusbar-part" style="flex: 1; padding: 2px 6px; font-size: 11px; color: #000;">
+          <span id="plaza-listeners">181 ouvinte(s).</span>
+        </div>
+        <div class="win-statusbar-grip" style="width: 14px; height: 14px; margin-left: 2px; flex-shrink: 0; background: linear-gradient(135deg, transparent 0%, transparent 40%, #808080 40%, #808080 50%, #ffffff 50%, #ffffff 60%, transparent 60%, transparent 80%, #808080 80%, #808080 90%, #ffffff 90%, #ffffff 100%);"></div>
       </div>
     </div>
 
@@ -745,7 +744,7 @@ Olá! Sou o Ademir Júnior, desenvolvedor focado na construção de sistemas cr�
   </div>
 
   <!-- Scripts -->
-  <script src="games/minesweeper/minesweeper.js?v=20261119c"></script>
-  <script src="app.js?v=20261119c"></script>
+  <script src="games/minesweeper/minesweeper.js?v=20261119e"></script>
+  <script src="app.js?v=20261119e"></script>
 </body>
 </html>

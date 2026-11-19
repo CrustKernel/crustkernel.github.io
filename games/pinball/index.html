@@ -216,6 +216,11 @@
     <!-- Canvas do Pinball -->
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
 
+    <!-- Botão de Áudio Flutuante Retrô -->
+    <button id="floating-mute-btn" onclick="toggleMute()" style="position: absolute; top: 8px; right: 8px; z-index: 50; background: #c0c0c0; border: 2px outset #ffffff; font-size: 11px; padding: 4px 8px; font-weight: bold; cursor: pointer; box-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+      🔊 Som: ON
+    </button>
+
     <!-- Controles Touch na Base -->
     <div id="touch-controls">
       <!-- Flipper Esquerdo -->
@@ -224,11 +229,16 @@
         <span class="sub">[ Tecla Z ]</span>
       </button>
 
-      <!-- Centro: Lançar Mola & Novo Jogo -->
+      <!-- Centro: Lançar Mola & Novo Jogo & Som -->
       <div class="plunger-col">
-        <button class="touch-btn newgame-btn" id="btn-newgame">
-          🔄 Novo (F2)
-        </button>
+        <div style="display: flex; gap: 4px; width: 100%;">
+          <button class="touch-btn newgame-btn" id="btn-newgame" style="flex: 1;">
+            🔄 F2
+          </button>
+          <button class="touch-btn mute-btn" id="btn-pinball-mute" onclick="toggleMute()" style="flex: 1; font-size: 10px; background: #c0c0c0; border: 2px outset #ffffff; color: #000; font-weight: bold;">
+            🔊 Som
+          </button>
+        </div>
         <button class="touch-btn plunger-btn" id="btn-plunger">
           🚀 LANÇAR
           <span style="font-size: 9px; color: #444;">[ Segure ]</span>
@@ -244,6 +254,92 @@
   </div>
 
   <script>
+    // =========================================================================
+    // INTERCEPTAÇÃO E CONTROLE DE ÁUDIO SDL2/EMSCRIPTEN (MUTE / PAUSE / STOP)
+    // =========================================================================
+    window.pinballAudioContexts = [];
+    window.pinballIsMuted = false;
+
+    const OriginalAudioContext = window.AudioContext || window.webkitAudioContext;
+    if (OriginalAudioContext) {
+      const ProxyAudioContext = function(...args) {
+        const ctx = new OriginalAudioContext(...args);
+        window.pinballAudioContexts.push(ctx);
+        window.pinballAudioContext = ctx;
+        if (window.pinballIsMuted) {
+          try { ctx.suspend(); } catch(e){}
+        }
+        return ctx;
+      };
+      ProxyAudioContext.prototype = OriginalAudioContext.prototype;
+      window.AudioContext = ProxyAudioContext;
+      window.webkitAudioContext = ProxyAudioContext;
+    }
+
+    function updateMuteUI() {
+      const isMuted = window.pinballIsMuted;
+      const floatBtn = document.getElementById('floating-mute-btn');
+      const touchBtn = document.getElementById('btn-pinball-mute');
+      if (floatBtn) {
+        floatBtn.textContent = isMuted ? '🔇 MUDO' : '🔊 Som: ON';
+        floatBtn.style.background = isMuted ? '#e0b0b0' : '#c0c0c0';
+      }
+      if (touchBtn) {
+        touchBtn.textContent = isMuted ? '🔇 Mudo' : '🔊 Som';
+        touchBtn.style.background = isMuted ? '#e0b0b0' : '#c0c0c0';
+      }
+    }
+
+    function toggleMute(forceMute) {
+      if (typeof forceMute === 'boolean') {
+        window.pinballIsMuted = forceMute;
+      } else {
+        window.pinballIsMuted = !window.pinballIsMuted;
+      }
+      window.pinballAudioContexts.forEach(ctx => {
+        try {
+          if (window.pinballIsMuted) {
+            ctx.suspend();
+          } else {
+            ctx.resume();
+          }
+        } catch(e) {}
+      });
+      updateMuteUI();
+      return window.pinballIsMuted;
+    }
+    window.toggleMute = toggleMute;
+
+    function stopPinballAudio() {
+      window.pinballIsMuted = true;
+      window.pinballAudioContexts.forEach(ctx => {
+        try { ctx.suspend(); } catch(e) {}
+        try { ctx.close(); } catch(e) {}
+      });
+      updateMuteUI();
+    }
+    window.stopPinballAudio = stopPinballAudio;
+
+    // Pausar áudio quando a aba não estiver visível
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        window.pinballAudioContexts.forEach(ctx => { try { ctx.suspend(); } catch(e){} });
+      } else if (!window.pinballIsMuted) {
+        window.pinballAudioContexts.forEach(ctx => { try { ctx.resume(); } catch(e){} });
+      }
+    });
+
+    // Comunicação com a janela pai do Windows 95
+    window.addEventListener('message', (e) => {
+      if (e.data === 'mute' || e.data === 'pause') {
+        toggleMute(true);
+      } else if (e.data === 'unmute' || e.data === 'resume') {
+        toggleMute(false);
+      } else if (e.data === 'stop') {
+        stopPinballAudio();
+      }
+    });
+
     // =========================================================================
     // DISPATCHER DE TECLAS EMSCRIPTEN (SIMULA ENTRADA DE TECLADO REAL)
     // =========================================================================

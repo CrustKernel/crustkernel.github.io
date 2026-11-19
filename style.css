@@ -722,6 +722,204 @@ body, html {
 }
 
 /* ==========================================================================
+   WIN95 TRACKBAR / RANGE SLIDER & NIGHTWAVE PLAZA PLAYER STYLES
+   ========================================================================== */
+.win95-trackbar {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.win95-trackbar:focus {
+  outline: none;
+}
+
+/* WebKit (Chrome / Safari / Edge) Track */
+.win95-trackbar::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-sizing: border-box;
+}
+
+/* WebKit (Chrome / Safari / Edge) Thumb */
+.win95-trackbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 20px;
+  margin-top: -8px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  cursor: pointer;
+}
+
+.win95-trackbar::-webkit-slider-thumb:active {
+  background: #b0b0b0;
+}
+
+/* Firefox Track */
+.win95-trackbar::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-sizing: border-box;
+}
+
+/* Firefox Thumb */
+.win95-trackbar::-moz-range-thumb {
+  width: 11px;
+  height: 20px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+/* Nightwave Plaza Window Elements */
+#win-cdplayer {
+  width: 512px;
+  max-width: 95vw;
+}
+
+.plaza-wrapper {
+  background: #c0c0c0;
+  padding: 10px 12px;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.plaza-artwork-box {
+  width: 126px;
+  height: 126px;
+  min-width: 126px;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #111111;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plaza-artwork-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.plaza-controls-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#plaza-artist {
+  font-size: 17px;
+  font-weight: bold;
+  color: #000000;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+#plaza-title {
+  font-size: 14px;
+  color: #111111;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.plaza-timer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.plaza-timer-box {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #c0c0c0;
+  padding: 4px 10px;
+  min-width: 135px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+#plaza-timer {
+  font-family: 'Segoe UI', Tahoma, monospace;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.plaza-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.plaza-btns-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plaza-ctrl-btn {
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: #000000;
+}
+
+/* ==========================================================================
    RESPONSIVIDADE MOBILE (WINDOWS 96 MOBILE EDITION - TOUCH OTIMIZADO)
    ========================================================================== */
 @media (max-width: 768px) {
@@ -981,12 +1179,16 @@ body, html {
   }
 
   /* 5. Player Nightwave Plaza */
+  #win-cdplayer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
   #win-cdplayer .plaza-wrapper {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
-    gap: 10px !important;
-    padding: 10px !important;
+    gap: 12px !important;
+    padding: 12px !important;
   }
   #win-cdplayer .plaza-artwork-box {
     width: 140px !important;
@@ -997,12 +1199,24 @@ body, html {
   #win-cdplayer .plaza-controls-col {
     width: 100% !important;
     height: auto !important;
+    gap: 10px !important;
   }
   #win-cdplayer .plaza-timer-row {
-    justify-content: center !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  #win-cdplayer .plaza-timer-box {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  #win-cdplayer .plaza-slider-wrap {
+    width: 100% !important;
   }
   #win-cdplayer .plaza-btns-row {
     justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 
   /* 6. Visualizador de Projetos */

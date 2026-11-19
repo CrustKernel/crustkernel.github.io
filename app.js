@@ -118,19 +118,33 @@ function initWindowManager() {
   }
 
   document.querySelectorAll('.win-window').forEach(win => {
-    // Torna a janela focável
-    win.addEventListener('mousedown', () => focusWindow(win.id));
+    // Torna a janela focável no clique ou toque imediatamente (modo captura para garantir prioridade)
+    win.addEventListener('pointerdown', () => focusWindow(win.id), true);
+    win.addEventListener('mousedown', () => focusWindow(win.id), true);
     win.addEventListener('touchstart', (e) => {
-      // No mobile, não interfere com cliques em botões ou links
-      if (e.target.closest('.ctrl-btn') || e.target.closest('.win-btn') || e.target.closest('a')) return;
+      // No mobile, não interfere com cliques em botões de fechar
+      if (e.target.closest('.ctrl-btn')) return;
       focusWindow(win.id);
-    }, { passive: true });
+    }, { passive: true, capture: true });
 
     // Titlebar dragging (apenas desktop)
     const titlebar = win.querySelector('.win-titlebar');
     if (titlebar) {
       setupDraggable(win, titlebar);
     }
+  });
+
+  // Quando o usuário clica dentro de qualquer iframe de jogo, traz a respectiva janela para frente
+  window.addEventListener('blur', () => {
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (active && active.tagName === 'IFRAME') {
+        const parentWin = active.closest('.win-window');
+        if (parentWin) {
+          focusWindow(parentWin.id);
+        }
+      }
+    }, 20);
   });
 
   // Garante que o botão X e controles respondam instantaneamente ao toque no mobile
@@ -504,16 +518,28 @@ function maximizeWindow(winId) {
 }
 
 function focusWindow(winId) {
-  highestZIndex += 2;
-  document.querySelectorAll('.win-window').forEach(w => {
-    w.classList.remove('active');
-  });
-
   const win = document.getElementById(winId);
-  if (win) {
-    win.style.zIndex = highestZIndex;
-    win.classList.add('active');
+  if (!win) return;
+
+  highestZIndex += 2;
+  if (highestZIndex > 8000) {
+    const allWins = Array.from(document.querySelectorAll('.win-window'))
+      .sort((a, b) => (parseInt(a.style.zIndex) || 100) - (parseInt(b.style.zIndex) || 100));
+    allWins.forEach((w, idx) => {
+      w.style.zIndex = 100 + (idx * 2);
+    });
+    highestZIndex = 100 + (allWins.length * 2);
   }
+
+  win.style.zIndex = highestZIndex;
+
+  document.querySelectorAll('.win-window').forEach(w => {
+    if (w.id === winId) {
+      w.classList.add('active');
+    } else {
+      w.classList.remove('active');
+    }
+  });
 
   updateTaskbar();
 }

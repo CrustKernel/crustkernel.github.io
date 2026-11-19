@@ -240,10 +240,6 @@ body, html {
   z-index: 100;
 }
 
-.win-window.active {
-  z-index: 200 !important;
-}
-
 .win-window.minimized {
   display: none !important;
 }

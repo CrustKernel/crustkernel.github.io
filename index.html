@@ -40,6 +40,18 @@
        ====================================================================== -->
   <div id="desktop">
 
+    <!-- BARRA SUPERIOR RETRÔ MOBILE (WINDOWS 96 MOBILE EDITION) -->
+    <div class="mobile-system-bar">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <img src="assets/icons/windows-0.png" style="width: 14px; height: 14px;" alt="">
+        <span>Windows 96 Mobile</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span>🔋 100%</span>
+        <span onclick="openWindow('win-cdplayer')" style="cursor: pointer; color: #00ffcc;">📻 Plaza.one</span>
+      </div>
+    </div>
+
     <!-- Grade de Ícones do Desktop -->
     <div class="desktop-icons-grid">
       
@@ -177,6 +189,10 @@
           <button class="win-btn" style="min-width: 130px; height: 34px;" onclick="openGame('pinball')">
             <img src="assets/icons/game_pinball.png" style="width: 16px; height: 16px;" alt="">
             Jogar Pinball
+          </button>
+          <button class="win-btn" style="min-width: 140px; height: 34px;" onclick="closeWindow('win-welcome')">
+            <img src="assets/icons/computer_explorer-5.png" style="width: 16px; height: 16px;" alt="">
+            Ir para a Área de Trabalho
           </button>
         </div>
 

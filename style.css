@@ -716,10 +716,41 @@ body, html {
   letter-spacing: 1px;
 }
 
+/* Barra de status mobile desativada por padrão em desktop */
+.mobile-system-bar {
+  display: none;
+}
+
 /* ==========================================================================
-   RESPONSIVIDADE MOBILE (SMARTPHONES E TABLETS TOUCH)
+   RESPONSIVIDADE MOBILE (WINDOWS 96 MOBILE EDITION - TOUCH OTIMIZADO)
    ========================================================================== */
 @media (max-width: 768px) {
+  /* CONTAINER DO DESKTOP EM MOBILE */
+  #desktop {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* BARRA SUPERIOR RETRÔ (WINDOWS 96 MOBILE) */
+  .mobile-system-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #000080 !important;
+    color: #ffffff !important;
+    padding: 6px 12px !important;
+    font-family: 'MS Sans Serif', Tahoma, sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: bold !important;
+    border-bottom: 2px solid #000040 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    z-index: 10 !important;
+  }
+
   /* 1. Tela de Boot */
   #boot-screen {
     padding: 30px 12px 24px 12px !important;
@@ -758,15 +789,26 @@ body, html {
     line-height: 1.4 !important;
   }
 
-  /* 2. Janelas em Tela Cheia e Perfeitamente Enquadradas */
+  /* 2. Janelas em Modo Single-Window Mobile (Pocket PC 96) */
   .win-window {
-    width: calc(100vw - 8px) !important;
-    max-width: calc(100vw - 8px) !important;
-    left: 4px !important;
-    top: 4px !important;
-    max-height: calc(100vh - 44px) !important;
-    height: auto !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: calc(100vh - 36px) !important;
+    max-height: calc(100vh - 36px) !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 2px solid #808080 !important;
+    box-shadow: none !important;
     box-sizing: border-box !important;
+    z-index: 500 !important;
+    flex-direction: column !important;
+  }
+  .win-window[style*="display: none"] {
+    display: none !important;
   }
 
   .win-window.maximized {
@@ -774,69 +816,154 @@ body, html {
     max-width: 100vw !important;
     left: 0 !important;
     top: 0 !important;
-    height: calc(100vh - 34px) !important;
-    max-height: calc(100vh - 34px) !important;
+    height: calc(100vh - 36px) !important;
+    max-height: calc(100vh - 36px) !important;
   }
 
-  /* Titlebar Mobile com Botões Fáceis de Tocar */
+  /* Titlebar Mobile com Botão X Grande e Touch-Friendly */
   .win-titlebar {
-    height: 28px !important;
-    padding: 2px 6px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: linear-gradient(90deg, #000080, #1084d0) !important;
   }
   .win-titlebar-left {
     min-width: 0 !important;
     flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
     overflow: hidden !important;
   }
   .win-titlebar-left span {
-    font-size: 11.5px !important;
+    font-size: 13px !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
   .win-titlebar-controls {
     flex-shrink: 0 !important;
-    gap: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  /* No mobile, oculta _ e □, deixando apenas o X gigante e fácil de tocar */
+  .win-titlebar-controls .ctrl-btn:not(:last-child) {
+    display: none !important;
   }
   .ctrl-btn {
-    width: 22px !important;
-    height: 20px !important;
-    font-size: 11px !important;
+    width: 44px !important;
+    height: 28px !important;
+    min-width: 44px !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    color: #000000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  .ctrl-btn:active {
+    border: 2px inset #ffffff !important;
+    background: #a0a0a0 !important;
   }
 
-  /* Menubars */
+  /* Menubars e Botões Voltar */
   .win-menubar {
-    padding: 3px 6px !important;
-    font-size: 11.5px !important;
-    gap: 6px !important;
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    gap: 8px !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
     flex-wrap: wrap !important;
+    background: #d4d0c8 !important;
+    border-bottom: 1px solid #808080 !important;
+  }
+  .win-menu-item {
+    padding: 3px 8px !important;
+    touch-action: manipulation !important;
+  }
+  .mobile-back-btn {
+    background: #c0c0c0 !important;
+    border: 2px outset #ffffff !important;
+    padding: 3px 10px !important;
+    font-weight: bold !important;
+    color: #000080 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    touch-action: manipulation !important;
+  }
+  .mobile-back-btn:active {
+    border: 2px inset #ffffff !important;
+    background: #a0a0a0 !important;
   }
 
   /* Área de Conteúdo Interno com Rolagem Fluida */
   .win-window > div:not(.win-titlebar):not(.win-menubar):not(.win-statusbar) {
-    max-height: calc(100vh - 110px) !important;
+    flex: 1 !important;
+    height: 100% !important;
+    max-height: none !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
     box-sizing: border-box !important;
+    padding: 12px !important;
   }
 
-  /* 3. Ícones do Desktop */
+  /* 3. Grade de Ícones do Desktop Mobile (Launcher Pocket PC 96) */
   .desktop-icons-grid {
-    grid-template-rows: repeat(auto-fill, 72px) !important;
-    gap: 10px 10px !important;
-    padding: 10px 8px !important;
+    flex: 1 !important;
+    display: grid !important;
+    grid-auto-flow: row !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: min-content !important;
+    gap: 16px 8px !important;
+    padding: 16px 10px !important;
+    justify-items: center !important;
+    overflow-y: auto !important;
+    max-height: none !important;
+    -webkit-overflow-scrolling: touch !important;
   }
   .desktop-icon {
-    width: 65px !important;
+    width: 90px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 8px 4px !important;
+    border-radius: 4px !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+  }
+  .desktop-icon:active {
+    background: rgba(0, 0, 128, 0.4) !important;
   }
   .desktop-icon img {
-    width: 32px !important;
-    height: 32px !important;
+    width: 38px !important;
+    height: 38px !important;
+    margin-bottom: 5px !important;
+    image-rendering: pixelated !important;
   }
   .desktop-icon span {
-    font-size: 10px !important;
-    max-width: 65px !important;
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+    max-width: 90px !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 1px #000000, -1px -1px 1px #000000, 1px -1px 1px #000000, -1px 1px 1px #000000 !important;
+    word-break: break-word !important;
   }
 
   /* 4. Janela de Boas-Vindas */

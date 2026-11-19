@@ -109,16 +109,93 @@ const openWindows = new Set();
 const windowPositions = {};
 
 function initWindowManager() {
-  document.querySelectorAll('.win-window').forEach(win => {
-    // Make window focusable on mousedown/touchstart
-    win.addEventListener('mousedown', () => focusWindow(win.id));
-    win.addEventListener('touchstart', () => focusWindow(win.id), { passive: true });
+  // No mobile, garante que todas as janelas iniciem fechadas (exceto após dismissBoot)
+  if (window.innerWidth <= 768) {
+    document.querySelectorAll('.win-window').forEach(w => {
+      w.style.display = 'none';
+      w.classList.remove('active');
+    });
+  }
 
-    // Titlebar dragging
+  document.querySelectorAll('.win-window').forEach(win => {
+    // Torna a janela focável
+    win.addEventListener('mousedown', () => focusWindow(win.id));
+    win.addEventListener('touchstart', (e) => {
+      // No mobile, não interfere com cliques em botões
+      if (e.target.closest('.ctrl-btn') || e.target.closest('.win-btn')) return;
+      focusWindow(win.id);
+    }, { passive: true });
+
+    // Titlebar dragging (apenas desktop)
     const titlebar = win.querySelector('.win-titlebar');
     if (titlebar) {
       setupDraggable(win, titlebar);
     }
+  });
+
+  // Garante que o botão X e controles respondam instantaneamente ao toque no mobile
+  document.querySelectorAll('.ctrl-btn').forEach(btn => {
+    btn.style.touchAction = 'manipulation';
+
+    const handleCtrlAction = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const onclickAttr = btn.getAttribute('onclick') || '';
+      const closeMatch = onclickAttr.match(/closeWindow\(['"]([^'"]+)['"]\)/);
+      const minMatch = onclickAttr.match(/minimizeWindow\(['"]([^'"]+)['"]\)/);
+      const maxMatch = onclickAttr.match(/maximizeWindow\(['"]([^'"]+)['"]\)/);
+
+      if (closeMatch && closeMatch[1]) {
+        closeWindow(closeMatch[1], e);
+      } else if (minMatch && minMatch[1]) {
+        minimizeWindow(minMatch[1]);
+      } else if (maxMatch && maxMatch[1]) {
+        maximizeWindow(maxMatch[1]);
+      } else {
+        const win = btn.closest('.win-window');
+        if (win) closeWindow(win.id, e);
+      }
+    };
+
+    btn.addEventListener('touchstart', (e) => {
+      e.stopPropagation();
+    }, { passive: true });
+
+    btn.addEventListener('touchend', handleCtrlAction, { passive: false });
+  });
+
+  // No mobile, adiciona o botão [ ◀ Voltar ao Desktop ] nos menubars para navegação 100% infalível
+  if (window.innerWidth <= 768) {
+    document.querySelectorAll('.win-window').forEach(win => {
+      const menubar = win.querySelector('.win-menubar');
+      if (menubar && !menubar.querySelector('.mobile-back-btn')) {
+        const backBtn = document.createElement('span');
+        backBtn.className = 'win-menu-item mobile-back-btn';
+        backBtn.innerHTML = '◀ Voltar ao Desktop';
+        backBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeWindow(win.id, e);
+        });
+        backBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeWindow(win.id, e);
+        });
+        menubar.insertBefore(backBtn, menubar.firstChild);
+      }
+    });
+  }
+
+  // No mobile, um único toque abre ícones da área de trabalho e pastas
+  document.querySelectorAll('.desktop-icon, .explorer-item').forEach(item => {
+    item.style.touchAction = 'manipulation';
+    item.addEventListener('touchend', (e) => {
+      if (window.innerWidth <= 768) {
+        e.preventDefault();
+        e.stopPropagation();
+        item.click();
+      }
+    });
   });
 
   // Taskbar button Start
@@ -301,21 +378,47 @@ function openWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
 
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    // Windows 96 Mobile Edition: apenas UMA janela aberta por vez!
+    document.querySelectorAll('.win-window').forEach(other => {
+      if (other.id !== winId) {
+        other.style.display = 'none';
+        other.classList.remove('active');
+        openWindows.delete(other.id);
+      }
+    });
+
+    // Em mobile, a janela ocupa 100% da área útil do dispositivo
+    win.style.left = '0';
+    win.style.top = '0';
+    win.style.width = '100vw';
+    win.style.maxWidth = '100vw';
+    win.style.height = 'calc(100vh - 36px)';
+    win.style.maxHeight = 'calc(100vh - 36px)';
+    win.style.border = 'none';
+    win.style.boxShadow = 'none';
+  } else {
+    // Desktop: posicionamento inteligente
+    if (!windowPositions[winId]) {
+      findSmartPosition(win);
+    }
+  }
+
   win.classList.remove('minimized');
   win.style.display = 'flex';
   openWindows.add(winId);
-
-  // Aplica posicionamento inteligente que evita cobrir janelas abertas
-  if (!windowPositions[winId]) {
-    findSmartPosition(win);
-  }
 
   focusWindow(winId);
   updateTaskbar();
   playAudio('ding');
 }
 
-function closeWindow(winId) {
+function closeWindow(winId, event) {
+  if (event) {
+    if (event.stopPropagation) event.stopPropagation();
+    if (event.preventDefault && event.cancelable) event.preventDefault();
+  }
   const win = document.getElementById(winId);
   if (!win) return;
 
@@ -338,7 +441,9 @@ function closeWindow(winId) {
   win.classList.remove('active');
   openWindows.delete(winId);
   updateTaskbar();
+  playAudio('ding');
 }
+window.closeWindow = closeWindow;
 
 function minimizeWindow(winId) {
   const win = document.getElementById(winId);
@@ -748,7 +853,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.hash === '#noboot') {
     bootScreen.style.display = 'none';
     openWindow('win-welcome');
-    openWindow('win-cdplayer');
+    if (window.innerWidth > 768) {
+      openWindow('win-cdplayer');
+    }
+  } else if (window.location.hash === '#preview_desktop') {
+    bootScreen.style.display = 'none';
   } else if (window.location.hash === '#preview_solitaire') {
     bootScreen.style.display = 'none';
     openGame('solitaire');

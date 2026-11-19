@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Space Cadet 3D Pinball for Windows</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      overflow: hidden;
+      font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Container do Jogo */
+    #game-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    canvas.emscripten {
+      border: 0 none;
+      background-color: #000000;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      display: block;
+    }
+
+    /* Tela de Carregamento Retrô */
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000080;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+      text-align: center;
+    }
+    .loading-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    .loading-status {
+      font-size: 13px;
+      color: #00ffcc;
+      margin-bottom: 16px;
+      font-family: monospace;
+    }
+    .loading-bar-border {
+      width: 220px;
+      height: 20px;
+      background: #c0c0c0;
+      border: 2px inset #ffffff;
+      padding: 2px;
+      margin-bottom: 10px;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      width: 30%;
+      background: #000080;
+      transition: width 0.3s;
+    }
+
+    /* Controles Touch Mobile para Pinball */
+    #touch-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 10px 14px;
+      z-index: 50;
+    }
+
+    .touch-btn {
+      pointer-events: auto;
+      background: #c0c0c0;
+      border: 3px outset #ffffff;
+      color: #000000;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+      touch-action: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .touch-btn:active, .touch-btn.pressed {
+      border: 3px inset #ffffff !important;
+      background: #a0a0a0 !important;
+      transform: translateY(2px);
+    }
+
+    .flipper-btn {
+      width: 110px;
+      height: 80px;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    .flipper-btn span.sub {
+      font-size: 10px;
+      color: #333;
+      margin-top: 3px;
+    }
+
+    .plunger-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    .plunger-btn {
+      width: 90px;
+      height: 58px;
+      font-size: 13px;
+      background: #d4d0c8;
+      border: 3px outset #ffffff;
+      color: #b00000;
+    }
+    .newgame-btn {
+      width: 90px;
+      height: 32px;
+      font-size: 11px;
+      background: #c0c0c0;
+    }
+
+    /* Zonas de toque transparentes na tela para jogar tocando em qualquer lugar */
+    .touch-zone-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: calc(100% - 120px);
+      z-index: 20;
+      touch-action: none;
+    }
+    .touch-zone-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 50%;
+      height: calc(100% - 120px);
+      z-index: 20;
+      touch-action: none;
+    }
+
+    /* Em telas de computador (desktop), esconde os botões touch e foca no teclado */
+    @media (min-width: 769px) {
+      #touch-controls {
+        display: none !important;
+      }
+      .touch-zone-left, .touch-zone-right {
+        display: none !important;
+      }
+      canvas.emscripten {
+        max-height: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-wrapper">
+    <!-- Tela de Carregamento -->
+    <div id="loading-overlay">
+      <div class="loading-title">🚀 3D Pinball: Space Cadet</div>
+      <div id="loading-text" class="loading-status">Carregando motor do jogo...</div>
+      <div class="loading-bar-border">
+        <div id="loading-fill" class="loading-bar-fill"></div>
+      </div>
+      <div style="font-size: 11px; color: #ddd; margin-top: 8px;">Windows 95 WebAssembly Port</div>
+    </div>
+
+    <!-- Zonas de toque invisíveis no meio da tela -->
+    <div class="touch-zone-left" id="zone-left"></div>
+    <div class="touch-zone-right" id="zone-right"></div>
+
+    <!-- Canvas do Pinball -->
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+
+    <!-- Controles Touch na Base -->
+    <div id="touch-controls">
+      <!-- Flipper Esquerdo -->
+      <button class="touch-btn flipper-btn" id="btn-flipper-left">
+        ◀ FLIPPER
+        <span class="sub">[ Tecla Z ]</span>
+      </button>
+
+      <!-- Centro: Lançar Mola & Novo Jogo -->
+      <div class="plunger-col">
+        <button class="touch-btn newgame-btn" id="btn-newgame">
+          🔄 Novo (F2)
+        </button>
+        <button class="touch-btn plunger-btn" id="btn-plunger">
+          🚀 LANÇAR
+          <span style="font-size: 9px; color: #444;">[ Segure ]</span>
+        </button>
+      </div>
+
+      <!-- Flipper Direito -->
+      <button class="touch-btn flipper-btn" id="btn-flipper-right">
+        FLIPPER ▶
+        <span class="sub">[ Tecla / ]</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // DISPATCHER DE TECLAS EMSCRIPTEN (SIMULA ENTRADA DE TECLADO REAL)
+    // =========================================================================
+    function sendKey(key, code, keyCode, isDown) {
+      const type = isDown ? 'keydown' : 'keyup';
+      const evt = new KeyboardEvent(type, {
+        key: key,
+        code: code,
+        keyCode: keyCode,
+        which: keyCode,
+        bubbles: true,
+        cancelable: true
+      });
+
+      const canvas = document.getElementById('canvas');
+      if (canvas) canvas.dispatchEvent(evt);
+      window.dispatchEvent(evt);
+      document.dispatchEvent(evt);
+    }
+
+    // Ações do Jogo
+    function leftFlipper(down) {
+      sendKey('z', 'KeyZ', 90, down);
+      const btn = document.getElementById('btn-flipper-left');
+      if (btn) btn.classList.toggle('pressed', down);
+    }
+
+    function rightFlipper(down) {
+      sendKey('/', 'Slash', 191, down);
+      const btn = document.getElementById('btn-flipper-right');
+      if (btn) btn.classList.toggle('pressed', down);
+    }
+
+    function plunger(down) {
+      sendKey(' ', 'Space', 32, down);
+      const btn = document.getElementById('btn-plunger');
+      if (btn) btn.classList.toggle('pressed', down);
+    }
+
+    function newGame() {
+      sendKey('F2', 'F2', 113, true);
+      setTimeout(() => sendKey('F2', 'F2', 113, false), 80);
+    }
+
+    // =========================================================================
+    // TOUCH EVENT LISTENERS COM MULTI-TOQUE SIMULTÂNEO
+    // =========================================================================
+    function bindTouchAction(el, onDown, onUp) {
+      if (!el) return;
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDown();
+      }, { passive: false });
+
+      el.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onUp();
+      }, { passive: false });
+
+      el.addEventListener('touchcancel', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onUp();
+      }, { passive: false });
+
+      // Suporte para mouse também
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        onDown();
+      });
+      el.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        onUp();
+      });
+      el.addEventListener('mouseleave', () => onUp());
+    }
+
+    // Botões físicos na tela
+    bindTouchAction(document.getElementById('btn-flipper-left'), () => leftFlipper(true), () => leftFlipper(false));
+    bindTouchAction(document.getElementById('btn-flipper-right'), () => rightFlipper(true), () => rightFlipper(false));
+    bindTouchAction(document.getElementById('btn-plunger'), () => plunger(true), () => plunger(false));
+
+    const btnNewGame = document.getElementById('btn-newgame');
+    if (btnNewGame) {
+      btnNewGame.addEventListener('click', (e) => { e.preventDefault(); newGame(); });
+      btnNewGame.addEventListener('touchend', (e) => { e.preventDefault(); newGame(); });
+    }
+
+    // Zonas de toque superiores na tela (metade esquerda e direita)
+    bindTouchAction(document.getElementById('zone-left'), () => leftFlipper(true), () => leftFlipper(false));
+    bindTouchAction(document.getElementById('zone-right'), () => rightFlipper(true), () => rightFlipper(false));
+
+    // =========================================================================
+    // CONFIGURAÇÃO EMSCRIPTEN DO SPACE CADET PINBALL
+    // =========================================================================
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingText = document.getElementById('loading-text');
+    const loadingFill = document.getElementById('loading-fill');
+
+    var Module = {
+      preRun: [],
+      postRun: [
+        function() {
+          console.log("PINBALL WASM ENGINE STARTED!");
+          document.title = "PINBALL_READY";
+          if (loadingOverlay) loadingOverlay.style.display = 'none';
+        }
+      ],
+      print: function(text) { console.log(text); },
+      printErr: function(text) { console.error(text); },
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+        canvas.addEventListener('webglcontextlost', function(e) {
+          alert('WebGL perdido. Recarregue a página.');
+          e.preventDefault();
+        }, false);
+        return canvas;
+      })(),
+      setStatus: function(text) {
+        if (!text) {
+          if (loadingOverlay) loadingOverlay.style.display = 'none';
+          return;
+        }
+        if (loadingText) loadingText.textContent = text;
+        const match = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        if (match && loadingFill) {
+          const current = parseFloat(match[2]);
+          const total = parseFloat(match[4]);
+          loadingFill.style.width = `${Math.min(100, Math.round((current / total) * 100))}%`;
+        }
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Carregando recursos (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')...' : '');
+      }
+    };
+
+    Module.setStatus('Iniciando Space Cadet...');
+  </script>
+  <script async src="SpaceCadetPinball.js"></script>
+</body>
+</html>

@@ -607,7 +607,7 @@ function openGame(gameId) {
   if (gameId === 'pinball') {
     const win = document.getElementById('win-pinball');
     const frame = win.querySelector('iframe');
-    frame.src = 'https://alula.github.io/SpaceCadetPinball/';
+    frame.src = 'games/pinball/index.html';
     openWindow('win-pinball');
   } else if (gameId === 'minesweeper') {
     openWindow('win-minesweeper');

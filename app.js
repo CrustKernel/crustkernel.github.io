@@ -426,10 +426,12 @@ function openWindow(winId) {
 
   // Se for o Pinball sendo aberto ou restaurado, garante que o iframe e áudio estejam ativos
   if (winId === 'win-pinball') {
+    const isMobileDevice = window.innerWidth <= 768;
+    const pinballUrl = isMobileDevice ? 'games/pinball/index.html?mode=mobile' : 'games/pinball/index.html?mode=desktop';
     const iframe = win.querySelector('iframe');
     if (iframe) {
-      if (!iframe.src || iframe.src.endsWith('about:blank')) {
-        iframe.src = 'games/pinball/index.html';
+      if (!iframe.src || iframe.src.endsWith('about:blank') || !iframe.src.includes(`mode=${isMobileDevice ? 'mobile' : 'desktop'}`)) {
+        iframe.src = pinballUrl;
       } else if (iframe.contentWindow) {
         try { iframe.contentWindow.postMessage('unmute', '*'); } catch(e){}
       }
@@ -678,11 +680,13 @@ function openProject(projectId) {
 // 5. CARREGADOR DE JOGOS
 function openGame(gameId) {
   if (gameId === 'pinball') {
+    const isMobileDevice = window.innerWidth <= 768;
+    const pinballUrl = isMobileDevice ? 'games/pinball/index.html?mode=mobile' : 'games/pinball/index.html?mode=desktop';
     const win = document.getElementById('win-pinball');
     const frame = document.getElementById('pinball-frame') || (win ? win.querySelector('iframe') : null);
     if (frame) {
-      if (!frame.src || frame.src.endsWith('about:blank')) {
-        frame.src = 'games/pinball/index.html';
+      if (!frame.src || frame.src.endsWith('about:blank') || !frame.src.includes(`mode=${isMobileDevice ? 'mobile' : 'desktop'}`)) {
+        frame.src = pinballUrl;
       } else if (frame.contentWindow) {
         try { frame.contentWindow.postMessage('unmute', '*'); } catch(e){}
       }

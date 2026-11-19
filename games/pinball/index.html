@@ -92,19 +92,67 @@
       transition: width 0.3s;
     }
 
-    /* Controles Touch Mobile para Pinball */
-    #touch-controls {
+    /* Controles Touch Mobile para Pinball (OCULTOS POR PADRÃO NO COMPUTADOR / DESKTOP) */
+    #touch-controls,
+    #floating-mute-btn,
+    .touch-zone-left,
+    .touch-zone-right {
+      display: none !important;
+    }
+
+    #floating-mute-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 50;
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      font-size: 11px;
+      padding: 4px 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* Somente na versão mobile (dispositivos móveis touch) exibimos os botões virtuais */
+    body.mobile-mode #touch-controls {
+      display: flex !important;
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
       height: 120px;
       pointer-events: none;
-      display: flex;
       justify-content: space-between;
       align-items: flex-end;
       padding: 10px 14px;
       z-index: 50;
+    }
+
+    body.mobile-mode #floating-mute-btn {
+      display: block !important;
+    }
+
+    body.mobile-mode .touch-zone-left {
+      display: block !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: calc(100% - 120px);
+      z-index: 20;
+      touch-action: none;
+    }
+
+    body.mobile-mode .touch-zone-right {
+      display: block !important;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 50%;
+      height: calc(100% - 120px);
+      z-index: 20;
+      touch-action: none;
     }
 
     .touch-btn {
@@ -161,39 +209,6 @@
       font-size: 11px;
       background: #c0c0c0;
     }
-
-    /* Zonas de toque transparentes na tela para jogar tocando em qualquer lugar */
-    .touch-zone-left {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 50%;
-      height: calc(100% - 120px);
-      z-index: 20;
-      touch-action: none;
-    }
-    .touch-zone-right {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 50%;
-      height: calc(100% - 120px);
-      z-index: 20;
-      touch-action: none;
-    }
-
-    /* Em telas de computador (desktop), esconde os botões touch e foca no teclado */
-    @media (min-width: 769px) {
-      #touch-controls {
-        display: none !important;
-      }
-      .touch-zone-left, .touch-zone-right {
-        display: none !important;
-      }
-      canvas.emscripten {
-        max-height: 100% !important;
-      }
-    }
   </style>
 </head>
 <body>
@@ -216,8 +231,8 @@
     <!-- Canvas do Pinball -->
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
 
-    <!-- Botão de Áudio Flutuante Retrô -->
-    <button id="floating-mute-btn" onclick="toggleMute()" style="position: absolute; top: 8px; right: 8px; z-index: 50; background: #c0c0c0; border: 2px outset #ffffff; font-size: 11px; padding: 4px 8px; font-weight: bold; cursor: pointer; box-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+    <!-- Botão de Áudio Flutuante Retrô (Apenas Mobile) -->
+    <button id="floating-mute-btn" onclick="toggleMute()">
       🔊 Som: ON
     </button>
 
@@ -254,6 +269,44 @@
   </div>
 
   <script>
+    // =========================================================================
+    // DETECÇÃO DE MODO: COMPUTADOR (DESKTOP) VS SMARTPHONE (MOBILE TOUCH)
+    // =========================================================================
+    function checkMobileMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode');
+      if (mode === 'mobile') {
+        document.body.classList.add('mobile-mode');
+        return true;
+      }
+      if (mode === 'desktop') {
+        document.body.classList.remove('mobile-mode');
+        return false;
+      }
+
+      // Se não especificado na URL, detecta pelo tamanho da tela pai e toque
+      let isMobile = false;
+      try {
+        if (window.parent && window.parent.innerWidth) {
+          isMobile = window.parent.innerWidth <= 768;
+        }
+      } catch(e) {}
+
+      if (!isMobile) {
+        const isSmallScreen = window.innerWidth <= 768 || window.screen.width <= 768;
+        const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 1);
+        isMobile = isSmallScreen && hasTouch;
+      }
+
+      if (isMobile) {
+        document.body.classList.add('mobile-mode');
+      } else {
+        document.body.classList.remove('mobile-mode');
+      }
+      return isMobile;
+    }
+    checkMobileMode();
+
     // =========================================================================
     // INTERCEPTAÇÃO E CONTROLE DE ÁUDIO SDL2/EMSCRIPTEN (MUTE / PAUSE / STOP)
     // =========================================================================

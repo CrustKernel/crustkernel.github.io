@@ -118,14 +118,24 @@ function initWindowManager() {
   }
 
   document.querySelectorAll('.win-window').forEach(win => {
-    // Torna a janela focável no clique ou toque imediatamente (modo captura para garantir prioridade)
-    win.addEventListener('pointerdown', () => focusWindow(win.id), true);
-    win.addEventListener('mousedown', () => focusWindow(win.id), true);
-    win.addEventListener('touchstart', (e) => {
-      // No mobile, não interfere com cliques em botões de fechar
-      if (e.target.closest('.ctrl-btn')) return;
+    // Torna a janela focável no clique ou toque
+    const handleFocus = (e) => {
+      // Se o clique for em controles, botões ou inputs, apenas ativa a janela sem bloquear a ação nativa
+      if (e.target.closest('.ctrl-btn, .win-btn, a, input, button, select, textarea')) {
+        if (!win.classList.contains('active')) {
+          focusWindow(win.id);
+        }
+        return;
+      }
       focusWindow(win.id);
-    }, { passive: true, capture: true });
+    };
+
+    win.addEventListener('pointerdown', handleFocus);
+    win.addEventListener('mousedown', handleFocus);
+    win.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.ctrl-btn, .win-btn, a, input, button, select, textarea')) return;
+      focusWindow(win.id);
+    }, { passive: true });
 
     // Titlebar dragging (apenas desktop)
     const titlebar = win.querySelector('.win-titlebar');
@@ -395,28 +405,47 @@ function openWindow(winId) {
 
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
-    // Windows 96 Mobile Edition: apenas UMA janela aberta por vez!
+    const isHomeWindow = (winId === 'win-welcome' || winId === 'win-cdplayer');
+
     document.querySelectorAll('.win-window').forEach(other => {
       if (other.id !== winId) {
-        if (other.id === 'win-pinball') {
-          closeWindow('win-pinball');
-        } else {
-          other.style.display = 'none';
-          other.classList.remove('active');
-          openWindows.delete(other.id);
+        // Na tela inicial do mobile, permite que Plaza.one e Bem-vindo fiquem abertas juntas!
+        if (isHomeWindow && (other.id === 'win-welcome' || other.id === 'win-cdplayer')) {
+          return;
         }
+        if (other.id === 'win-pinball') {
+          const iframe = other.querySelector('iframe');
+          if (iframe && iframe.contentWindow) {
+            try { iframe.contentWindow.postMessage('mute', '*'); } catch(e){}
+          }
+        }
+        other.style.display = 'none';
+        other.classList.remove('active');
+        openWindows.delete(other.id);
       }
     });
 
-    // Em mobile, a janela ocupa 100% da área útil do dispositivo
-    win.style.left = '0';
-    win.style.top = '0';
-    win.style.width = '100vw';
-    win.style.maxWidth = '100vw';
-    win.style.height = 'calc(100vh - 36px)';
-    win.style.maxHeight = 'calc(100vh - 36px)';
-    win.style.border = 'none';
-    win.style.boxShadow = 'none';
+    if (!isHomeWindow) {
+      // Janelas de tela cheia (jogos, pastas, etc.)
+      win.style.left = '0';
+      win.style.top = '0';
+      win.style.width = '100vw';
+      win.style.maxWidth = '100vw';
+      win.style.height = 'calc(100vh - 36px)';
+      win.style.maxHeight = 'calc(100vh - 36px)';
+      win.style.border = 'none';
+      win.style.boxShadow = 'none';
+    } else {
+      // Janelas empilhadas na tela inicial (Plaza no topo, Bem-vindo logo abaixo)
+      win.style.left = 'auto';
+      win.style.top = 'auto';
+      win.style.width = '100%';
+      win.style.maxWidth = '100%';
+      win.style.height = 'auto';
+      win.style.maxHeight = 'none';
+      win.style.border = '';
+      win.style.boxShadow = '';
+    }
   } else {
     // Desktop: posicionamento inteligente
     if (!windowPositions[winId]) {
@@ -455,6 +484,9 @@ function closeWindow(winId, event) {
   const win = document.getElementById(winId);
   if (!win) return;
 
+  const wasOpen = openWindows.has(winId) || win.style.display !== 'none';
+  if (!wasOpen) return;
+
   // Se a janela estiver maximizada, remove a maximização
   win.classList.remove('maximized');
 
@@ -486,6 +518,13 @@ function closeWindow(winId, event) {
   win.style.display = 'none';
   win.classList.remove('active');
   openWindows.delete(winId);
+
+  // No mobile, ao fechar um jogo ou pasta, restaura a tela inicial (Plaza + Bem-vindo)
+  if (window.innerWidth <= 768 && winId !== 'win-welcome' && winId !== 'win-cdplayer') {
+    openWindow('win-cdplayer');
+    openWindow('win-welcome');
+  }
+
   updateTaskbar();
   playAudio('ding');
 }
@@ -494,6 +533,9 @@ window.closeWindow = closeWindow;
 function minimizeWindow(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
+
+  const wasOpen = openWindows.has(winId) || win.style.display !== 'none';
+  if (!wasOpen) return;
 
   if (winId === 'win-pinball') {
     const iframe = win.querySelector('iframe');
@@ -680,6 +722,9 @@ function openProject(projectId) {
 // 5. CARREGADOR DE JOGOS
 function openGame(gameId) {
   if (gameId === 'pinball') {
+    // Pausa a rádio Plaza.one automaticamente para não sobrepor o som
+    toggleRadio(false);
+
     const isMobileDevice = window.innerWidth <= 768;
     const pinballUrl = isMobileDevice ? 'games/pinball/index.html?mode=mobile' : 'games/pinball/index.html?mode=desktop';
     const win = document.getElementById('win-pinball');
@@ -839,25 +884,79 @@ function startRadioStream() {
   }
 }
 
+let lastToggleTime = 0;
+let isRadioMuted = false;
+let preMuteVolume = 0.50;
+
+function setRadioVolume(vol) {
+  currentVolume = Math.max(0, Math.min(1, Math.round(vol * 100) / 100));
+  if (radioAudio) {
+    try {
+      radioAudio.volume = currentVolume;
+      radioAudio.muted = (currentVolume <= 0.01);
+    } catch(e) {}
+  }
+  const slider = document.getElementById('plaza-vol-slider');
+  if (slider) {
+    slider.value = currentVolume;
+  }
+  const speakerIcon = document.getElementById('plaza-speaker-icon');
+  if (speakerIcon) {
+    if (currentVolume <= 0.01 || (radioAudio && radioAudio.muted)) {
+      speakerIcon.style.opacity = '0.35';
+      speakerIcon.title = 'Mudo (Clique para reativar som)';
+    } else {
+      speakerIcon.style.opacity = '1.0';
+      speakerIcon.title = `Volume: ${Math.round(currentVolume * 100)}% (Clique para silenciar)`;
+    }
+  }
+}
+window.setRadioVolume = setRadioVolume;
+
+function adjustRadioVolume(delta) {
+  setRadioVolume(currentVolume + delta);
+  playAudio('ding');
+}
+window.adjustRadioVolume = adjustRadioVolume;
+
+function toggleRadioMute() {
+  if (currentVolume <= 0.01 || (radioAudio && radioAudio.muted)) {
+    // Desmutar
+    setRadioVolume(preMuteVolume > 0.05 ? preMuteVolume : 0.5);
+  } else {
+    // Mutar
+    preMuteVolume = currentVolume;
+    setRadioVolume(0);
+  }
+  playAudio('ding');
+}
+window.toggleRadioMute = toggleRadioMute;
+
 function toggleRadio(forceState) {
+  const now = Date.now();
+  if (forceState === undefined && (now - lastToggleTime < 300)) {
+    return; // Evita duplo clique rápido em telas touch
+  }
+  lastToggleTime = now;
+
   if (forceState === true) {
     startRadioStream();
     return;
   }
   if (forceState === false) {
     if (radioAudio) {
-      radioAudio.pause();
-      radioAudio.src = '';
+      try { radioAudio.pause(); } catch(e) {}
     }
     isRadioPlaying = false;
     updatePlayBtn(false);
     return;
   }
 
-  if (isRadioPlaying) {
+  const isCurrentlyPlaying = (radioAudio && !radioAudio.paused) || isRadioPlaying;
+
+  if (isCurrentlyPlaying) {
     if (radioAudio) {
-      radioAudio.pause();
-      radioAudio.src = '';
+      try { radioAudio.pause(); } catch(e) {}
     }
     isRadioPlaying = false;
     updatePlayBtn(false);
@@ -902,8 +1001,18 @@ function initCDPlayer() {
   if (slider) {
     slider.value = currentVolume;
     slider.addEventListener('input', (e) => {
-      currentVolume = parseFloat(e.target.value);
-      if (radioAudio) radioAudio.volume = currentVolume;
+      setRadioVolume(parseFloat(e.target.value));
+    });
+    slider.addEventListener('change', (e) => {
+      setRadioVolume(parseFloat(e.target.value));
+    });
+  }
+
+  const playBtn = document.getElementById('plaza-btn-play');
+  if (playBtn) {
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleRadio();
     });
   }
 }
@@ -927,6 +1036,7 @@ function restartSystem() {
     setTimeout(() => {
       boot.classList.add('fade-out');
       playAudio('startup');
+      openWindow('win-cdplayer');
       openWindow('win-welcome');
     }, 1800);
   }
@@ -955,24 +1065,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Inicia a rádio Nightwave Plaza IMEDIATAMENTE (no clique/toque síncrono)
     startRadioStream();
 
-    // 3. Abre a janela de Boas-Vindas (e o Player lado a lado em desktop)
+    // 3. Abre o Player e a janela de Boas-Vindas (lado a lado no desktop, empilhados no mobile)
     setTimeout(() => {
+      openWindow('win-cdplayer');
       openWindow('win-welcome');
-      if (window.innerWidth > 768) {
-        setTimeout(() => {
-          openWindow('win-cdplayer');
-        }, 150);
-      }
     }, 250);
   }
   window.dismissBoot = dismissBoot;
 
   if (window.location.hash === '#noboot') {
     bootScreen.style.display = 'none';
+    openWindow('win-cdplayer');
     openWindow('win-welcome');
-    if (window.innerWidth > 768) {
-      openWindow('win-cdplayer');
-    }
   } else if (window.location.hash === '#preview_desktop') {
     bootScreen.style.display = 'none';
   } else if (window.location.hash === '#preview_solitaire') {

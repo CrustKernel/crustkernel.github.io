@@ -899,6 +899,33 @@ body, html {
   min-width: 0;
 }
 
+.plaza-vol-btn {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: #c0c0c0;
+  border: 2px outset #ffffff;
+  color: #000000;
+  user-select: none;
+}
+
+.plaza-vol-btn:active {
+  border: 2px inset #ffffff;
+  background: #a0a0a0;
+}
+
+.win95-trackbar {
+  touch-action: none !important;
+}
+
 .plaza-btns-row {
   display: flex;
   align-items: center;
@@ -921,9 +948,15 @@ body, html {
 @media (max-width: 768px) {
   /* CONTAINER DO DESKTOP EM MOBILE */
   #desktop {
-    padding: 0 !important;
+    padding: 6px !important;
     display: flex !important;
     flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    height: calc(100vh - 34px) !important;
+    box-sizing: border-box !important;
+    gap: 8px !important;
   }
 
   /* BARRA SUPERIOR RETRÔ (WINDOWS 96 MOBILE) */
@@ -983,23 +1016,62 @@ body, html {
     line-height: 1.4 !important;
   }
 
-  /* 2. Janelas em Modo Single-Window Mobile (Pocket PC 96) */
+  /* 2. Janelas em Modo Mobile */
   .win-window {
+    box-sizing: border-box !important;
+    flex-direction: column !important;
+  }
+
+  /* Na tela inicial mobile, Nightwave Plaza e Bem-vindo ficam empilhadas verticalmente:
+     Plaza.one no TOPO (order: 1) e Bem-vindo LOGO ABAIXO (order: 2) */
+  #win-cdplayer,
+  #win-welcome {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    flex-shrink: 0 !important;
+    margin-bottom: 8px !important;
+    z-index: 20 !important;
+    border: 2px solid #ffffff !important;
+    border-right-color: #808080 !important;
+    border-bottom-color: #808080 !important;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4) !important;
+  }
+
+  #win-cdplayer {
+    order: 1 !important;
+  }
+
+  #win-welcome {
+    order: 2 !important;
+  }
+
+  /* Janelas de aplicativos em tela cheia no mobile (jogos, pastas, etc.) */
+  #win-pinball,
+  #win-solitaire,
+  #win-skifree,
+  #win-project-viewer,
+  #win-projects-folder,
+  #win-minesweeper,
+  #win-notepad,
+  #win-network,
+  #win-shutdown {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
+    bottom: 34px !important;
     width: 100vw !important;
     max-width: 100vw !important;
-    height: calc(100vh - 36px) !important;
-    max-height: calc(100vh - 36px) !important;
-    border-radius: 0 !important;
-    border: none !important;
-    border-bottom: 2px solid #808080 !important;
-    box-shadow: none !important;
-    box-sizing: border-box !important;
-    z-index: 500 !important;
-    flex-direction: column !important;
+    height: calc(100vh - 34px) !important;
+    max-height: calc(100vh - 34px) !important;
+    z-index: 600 !important;
   }
   .win-window[style*="display: none"] {
     display: none !important;
@@ -1116,9 +1188,19 @@ body, html {
     padding: 12px !important;
   }
 
+  /* Janelas fixas da tela inicial mobile (Plaza e Bem-vindo) expandem naturalmente sem scroll aninhado */
+  #win-cdplayer > div:not(.win-titlebar):not(.win-menubar):not(.win-statusbar),
+  #win-welcome > div:not(.win-titlebar):not(.win-menubar):not(.win-statusbar) {
+    flex: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
   /* 3. Grade de Ícones do Desktop Mobile (Launcher Pocket PC 96) */
   .desktop-icons-grid {
-    flex: 1 !important;
+    order: 3 !important;
+    flex: none !important;
     display: grid !important;
     grid-auto-flow: row !important;
     grid-template-columns: repeat(3, 1fr) !important;
@@ -1127,9 +1209,10 @@ body, html {
     gap: 16px 8px !important;
     padding: 16px 10px !important;
     justify-items: center !important;
-    overflow-y: auto !important;
+    overflow-y: visible !important;
     max-height: none !important;
-    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .desktop-icon {
     width: 90px !important;
@@ -1183,36 +1266,67 @@ body, html {
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
-    gap: 12px !important;
-    padding: 12px !important;
+    gap: 10px !important;
+    padding: 10px !important;
   }
   #win-cdplayer .plaza-artwork-box {
-    width: 140px !important;
-    height: 140px !important;
-    min-width: 140px !important;
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 120px !important;
     margin: 0 auto !important;
   }
   #win-cdplayer .plaza-controls-col {
     width: 100% !important;
     height: auto !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
   #win-cdplayer .plaza-timer-row {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 6px !important;
     width: 100% !important;
   }
   #win-cdplayer .plaza-timer-box {
     width: 100% !important;
     min-width: 0 !important;
+    padding: 3px 6px !important;
   }
   #win-cdplayer .plaza-slider-wrap {
     width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+  }
+  .plaza-vol-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 16px !important;
+    touch-action: manipulation !important;
+  }
+  .win95-trackbar {
+    height: 28px !important;
+    touch-action: none !important;
+  }
+  .win95-trackbar::-webkit-slider-thumb {
+    width: 22px !important;
+    height: 28px !important;
+    margin-top: -12px !important;
+  }
+  .win95-trackbar::-moz-range-thumb {
+    width: 22px !important;
+    height: 28px !important;
+  }
+  #plaza-btn-play {
+    min-width: 86px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+    touch-action: manipulation !important;
   }
   #win-cdplayer .plaza-btns-row {
     justify-content: center !important;
     flex-wrap: wrap !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   /* 6. Visualizador de Projetos */

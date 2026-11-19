@@ -9,7 +9,7 @@
   <title>Ademir Júnior • Portfólio Interativo Windows 95 Edition</title>
   <meta name="description" content="Portfólio interativo retrô do desenvolvedor Full Stack Ademir Júnior. Experiência autêntica de Windows 95 no navegador com 3D Pinball, Campo Minado e projetos reais.">
   <link rel="icon" type="image/png" href="assets/icons/windows-0.png">
-  <link rel="stylesheet" href="style.css?v=20261119g">
+  <link rel="stylesheet" href="style.css?v=20261119h">
 </head>
 <body>
 
@@ -482,14 +482,16 @@
                 <span id="plaza-timer">00:00 / 00:00</span>
               </div>
               <div class="plaza-slider-wrap">
-                <input type="range" id="plaza-vol-slider" class="win95-trackbar" min="0" max="1" step="0.01" value="0.5" title="Volume da Rádio">
-                <img src="assets/icons/loudspeaker_rays-0.png" style="width: 18px; height: 18px; image-rendering: pixelated; flex-shrink: 0;" alt="Volume">
+                <button type="button" class="win-btn plaza-vol-btn" onclick="adjustRadioVolume(-0.1)" title="Diminuir volume">－</button>
+                <input type="range" id="plaza-vol-slider" class="win95-trackbar" min="0" max="1" step="0.05" value="0.5" title="Volume da Rádio">
+                <button type="button" class="win-btn plaza-vol-btn" onclick="adjustRadioVolume(0.1)" title="Aumentar volume">＋</button>
+                <img id="plaza-speaker-icon" src="assets/icons/loudspeaker_rays-0.png" style="width: 18px; height: 18px; image-rendering: pixelated; flex-shrink: 0; cursor: pointer;" alt="Mudo" onclick="toggleRadioMute()" title="Silenciar / Ativar som">
               </div>
             </div>
 
             <!-- Botões de Ação estilo Plaza -->
             <div class="plaza-btns-row">
-              <button id="plaza-btn-play" class="win-btn plaza-ctrl-btn" style="min-width: 86px; font-weight: bold;" onclick="toggleRadio()">
+              <button id="plaza-btn-play" type="button" class="win-btn plaza-ctrl-btn" style="min-width: 86px; font-weight: bold;" onclick="toggleRadio()">
                 Tocar
               </button>
               <button id="plaza-btn-heart" class="win-btn plaza-ctrl-btn" style="min-width: 58px; gap: 4px;" onclick="likeCurrentSong()" title="Curtir Música">
@@ -744,7 +746,7 @@ Olá! Sou o Ademir Júnior, desenvolvedor focado na construção de sistemas cr�
   </div>
 
   <!-- Scripts -->
-  <script src="games/minesweeper/minesweeper.js?v=20261119g"></script>
-  <script src="app.js?v=20261119g"></script>
+  <script src="games/minesweeper/minesweeper.js?v=20261119h"></script>
+  <script src="app.js?v=20261119h"></script>
 </body>
 </html>

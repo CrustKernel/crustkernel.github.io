@@ -121,8 +121,8 @@ function initWindowManager() {
     // Torna a janela focável
     win.addEventListener('mousedown', () => focusWindow(win.id));
     win.addEventListener('touchstart', (e) => {
-      // No mobile, não interfere com cliques em botões
-      if (e.target.closest('.ctrl-btn') || e.target.closest('.win-btn')) return;
+      // No mobile, não interfere com cliques em botões ou links
+      if (e.target.closest('.ctrl-btn') || e.target.closest('.win-btn') || e.target.closest('a')) return;
       focusWindow(win.id);
     }, { passive: true });
 
@@ -186,8 +186,9 @@ function initWindowManager() {
     });
   }
 
-  // No mobile, um único toque abre ícones da área de trabalho e pastas
+  // No mobile, um único toque abre ícones da área de trabalho e pastas (exceto links âncora nativos)
   document.querySelectorAll('.desktop-icon, .explorer-item').forEach(item => {
+    if (item.tagName === 'A') return; // Links <a> funcionam nativamente sem interferência de preventDefault
     item.style.touchAction = 'manipulation';
     item.addEventListener('touchend', (e) => {
       if (window.innerWidth <= 768) {
@@ -597,6 +598,10 @@ function openProject(projectId) {
     btn.setAttribute('href', waUrl);
     btn.target = '_blank';
     btn.rel = 'noopener noreferrer';
+    btn.onclick = (e) => {
+      window.open(waUrl, '_blank');
+      e.preventDefault();
+    };
   });
 
   openWindow('win-project-viewer');

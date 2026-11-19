@@ -140,7 +140,7 @@
             <span>INFORMAÇÕES DE CONTATO DIRETO:</span>
             <span style="color: #008000; font-size: 11.5px;">● Status: Disponível para Contratos</span>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; font-size: 12.5px; line-height: 1.4;">
+          <div class="welcome-contact-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; font-size: 12.5px; line-height: 1.4;">
             <div><strong>WhatsApp:</strong> (21) 98156-8906</div>
             <div><strong>E-mail:</strong> ademirjunior.contato.dsgnr@gmail.com</div>
             <div><strong>Disponibilidade:</strong> Imediata (PJ / CLT / Remoto)</div>
@@ -165,7 +165,7 @@
         </div>
 
         <!-- Botões de Ação Rápida -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;">
+        <div class="welcome-actions" style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;">
           <a href="https://wa.me/5521981568906" target="_blank" class="win-btn" style="min-width: 160px; height: 34px;">
             <img src="assets/icons/keys-0.png" style="width: 16px; height: 16px;" alt="">
             Falar no WhatsApp
@@ -443,14 +443,14 @@
       </div>
 
       <div style="padding: 8px; background: #c0c0c0;">
-        <div class="win-inset" style="padding: 10px; background: #c0c0c0; display: flex; gap: 12px; align-items: center;">
+        <div class="win-inset plaza-wrapper" style="padding: 10px; background: #c0c0c0; display: flex; gap: 12px; align-items: center;">
           <!-- Artwork da Música (Capinha) -->
-          <div style="width: 124px; height: 124px; min-width: 124px; border: 2px inset #ffffff; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 1px 2px #000;">
+          <div class="plaza-artwork-box" style="width: 124px; height: 124px; min-width: 124px; border: 2px inset #ffffff; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 1px 2px #000;">
             <img id="plaza-artwork" src="assets/plaza_icons/ball_2x.png" alt="Capa da Música" style="width: 100%; height: 100%; object-fit: cover; display: block;">
           </div>
 
           <!-- Informações e Controles -->
-          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; height: 124px;">
+          <div class="plaza-controls-col" style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; height: 124px;">
             <div>
               <div id="plaza-artist" style="font-size: 16px; font-weight: bold; color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.2px;">
                 Nightwave Plaza
@@ -461,7 +461,7 @@
             </div>
 
             <!-- Timer e Slider de Volume -->
-            <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+            <div class="plaza-timer-row" style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
               <div class="win-inset" style="background: #c0c0c0; padding: 3px 6px; font-family: 'Consolas', monospace; font-size: 13px; font-weight: bold; color: #000; text-align: center; min-width: 110px;">
                 <span id="plaza-timer">00:00 / 00:00</span>
               </div>
@@ -472,7 +472,7 @@
             </div>
 
             <!-- Botões de Ação estilo Plaza -->
-            <div style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
+            <div class="plaza-btns-row" style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
               <button id="plaza-btn-play" class="win-btn" style="min-width: 70px; height: 26px; font-weight: bold;" onclick="toggleRadio()">
                 Tocar
               </button>

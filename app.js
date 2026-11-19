@@ -162,8 +162,10 @@ function updateClock() {
 function findSmartPosition(win) {
   const isMobile = window.innerWidth <= 768;
   if (isMobile) {
-    win.style.left = '2.5vw';
-    win.style.top = '10px';
+    win.style.left = '4px';
+    win.style.top = '4px';
+    win.style.width = 'calc(100vw - 8px)';
+    win.style.maxWidth = 'calc(100vw - 8px)';
     return;
   }
 
@@ -406,6 +408,7 @@ function setupDraggable(win, handle) {
   let startX, startY, initialLeft, initialTop;
 
   const onStart = (e) => {
+    if (window.innerWidth <= 768) return; // Em smartphone, mantém a janela estática e perfeitamente enquadrada
     if (win.classList.contains('maximized')) return;
     if (e.target.closest('.win-titlebar-controls')) return;
 
@@ -730,12 +733,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Inicia a rádio Nightwave Plaza IMEDIATAMENTE (no clique/toque síncrono)
     startRadioStream();
 
-    // 3. Abre a janela de Boas-Vindas e o Player da Nightwave Plaza lado a lado sem sobreposição
+    // 3. Abre a janela de Boas-Vindas (e o Player lado a lado em desktop)
     setTimeout(() => {
       openWindow('win-welcome');
-      setTimeout(() => {
-        openWindow('win-cdplayer');
-      }, 150);
+      if (window.innerWidth > 768) {
+        setTimeout(() => {
+          openWindow('win-cdplayer');
+        }, 150);
+      }
     }, 250);
   }
   window.dismissBoot = dismissBoot;

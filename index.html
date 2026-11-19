@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ademir Júnior • Portfólio Interativo Windows 95 Edition</title>
+  <meta name="description" content="Portfólio interativo retrô do desenvolvedor Full Stack Ademir Júnior. Experiência autêntica de Windows 95 no navegador com 3D Pinball, Campo Minado e projetos reais.">
+  <link rel="icon" type="image/png" href="assets/icons/windows-0.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ======================================================================
+       TELA DE BOOT NOSTÁLGICA (SPLASH SCREEN WINDOWS 95)
+       ====================================================================== -->
+  <div id="boot-screen" onclick="dismissBoot()" style="cursor: pointer;">
+    <div class="boot-logo-container">
+      <img src="assets/icons/windows-0.png" class="boot-logo" alt="Windows 95">
+      <div class="boot-title">Microsoft Windows 95</div>
+      <div class="boot-subtitle">Portfólio de Ademir Júnior</div>
+    </div>
+    
+    <div class="boot-progress-wrapper">
+      <div class="xp-boot-track" title="Clique em qualquer lugar para iniciar o sistema">
+        <div class="xp-block-group">
+          <div class="xp-block"></div>
+          <div class="xp-block"></div>
+          <div class="xp-block"></div>
+        </div>
+      </div>
+
+      <div class="boot-hint">
+        Clique em qualquer lugar para iniciar o sistema
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       DESKTOP (ÁREA DE TRABALHO)
+       ====================================================================== -->
+  <div id="desktop">
+
+    <!-- Grade de Ícones do Desktop -->
+    <div class="desktop-icons-grid">
+      
+      <div class="desktop-icon" ondblclick="openWindow('win-mycomputer')" onclick="if(window.innerWidth<=768) openWindow('win-mycomputer')">
+        <img src="assets/icons/computer_explorer-5.png" alt="Meu Computador">
+        <span>Meu Computador</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-projects-folder')" onclick="if(window.innerWidth<=768) openWindow('win-projects-folder')">
+        <img src="assets/icons/briefcase-0.png" alt="Meus Projetos">
+        <span>Meus Projetos</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-games-folder')" onclick="if(window.innerWidth<=768) openWindow('win-games-folder')">
+        <img src="assets/icons/game_pinball.png" alt="Jogos">
+        <span>Jogos</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-network')" onclick="if(window.innerWidth<=768) openWindow('win-network')">
+        <img src="assets/icons/network_normal_two_pcs-0.png" alt="Ambiente de Rede">
+        <span>Ambiente de Rede</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-notepad')" onclick="if(window.innerWidth<=768) openWindow('win-notepad')">
+        <img src="assets/icons/notepad_file-0.png" alt="Sobre Mim.txt">
+        <span>Sobre Mim.txt</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-cdplayer')" onclick="if(window.innerWidth<=768) openWindow('win-cdplayer')">
+        <img src="assets/plaza_icons/ball.png" alt="Nightwave Plaza">
+        <span>Nightwave Plaza</span>
+      </div>
+
+      <div class="desktop-icon" ondblclick="openWindow('win-recycle')" onclick="if(window.innerWidth<=768) openWindow('win-recycle')">
+        <img src="assets/icons/recycle_bin_empty-4.png" alt="Lixeira">
+        <span>Lixeira</span>
+      </div>
+
+      <a href="https://wa.me/5521981568906?text=Ol%C3%A1%20Ademir!%20Vi%20seu%20portf%C3%B3lio%20Windows%2095%20e%20gostaria%20de%20conversar." target="_blank" class="desktop-icon" style="text-decoration: none;">
+        <img src="assets/icons/keys-0.png" alt="Contato">
+        <span>WhatsApp Direto</span>
+      </a>
+
+    </div>
+
+    <!-- ====================================================================
+         JANELAS DO SISTEMA
+         ==================================================================== -->
+
+    <!-- JANELA 1: BEM-VINDO AO WINDOWS 95 (CAPA) -->
+    <div id="win-welcome" class="win-window" style="width: 650px;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/windows-0.png" alt="">
+          <span>Bem-vindo ao Windows 95 • Portfólio de Ademir Júnior</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-welcome')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-welcome')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-welcome')">✕</button>
+        </div>
+      </div>
+
+      <div style="padding: 16px; background: #c0c0c0; overflow-y: auto;">
+        
+        <!-- Banner de Perfil -->
+        <div style="display: flex; gap: 16px; margin-bottom: 14px; align-items: center; background: #ffffff; padding: 14px 16px; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #ffffff; border-bottom: 2px solid #ffffff;">
+          <img src="assets/icons/windows-0.png" style="width: 52px; height: 52px;" alt="Win95">
+          <div>
+            <div style="font-size: 26px; font-weight: bold; color: #000080; margin-bottom: 2px;">
+              Ademir Júnior
+            </div>
+            <div style="font-size: 14px; color: #111111; font-weight: bold;">
+              Desenvolvedor Full Stack • Especialista em Aplicações Desktop e Sistemas
+            </div>
+            <div style="font-size: 12px; color: #444444; margin-top: 2px;">
+              Sistemas Críticos Offline-First • Engenharia de Dados • Soluções de Alta Disponibilidade
+            </div>
+          </div>
+        </div>
+
+        <!-- Você Sabia? -->
+        <div style="display: flex; gap: 12px; margin-bottom: 14px; background: #c0c0c0; border: 1px solid #808080; padding: 12px 14px;">
+          <img src="assets/icons/msg_information-0.png" style="width: 36px; height: 36px; flex-shrink: 0;" alt="Info">
+          <div>
+            <div style="font-weight: bold; color: #000080; font-size: 13.5px; margin-bottom: 3px;">
+              Você sabia?
+            </div>
+            <div style="font-size: 12.5px; line-height: 1.45; color: #111111;">
+              Sistemas legislativos e de farmácias públicas não podem depender de internet instável. Este portfólio interativo apresenta <strong>5 sistemas reais desenvolvidos em produção</strong> onde arquiteturas resilientes e processamento local eliminaram o estresse operacional do usuário.
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados de Contato Direto -->
+        <div style="background: #ffffff; padding: 12px 16px; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #ffffff; border-bottom: 2px solid #ffffff; margin-bottom: 14px;">
+          <div style="font-size: 13px; font-weight: bold; color: #000080; margin-bottom: 6px; display: flex; justify-content: space-between;">
+            <span>INFORMAÇÕES DE CONTATO DIRETO:</span>
+            <span style="color: #008000; font-size: 11.5px;">● Status: Disponível para Contratos</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; font-size: 12.5px; line-height: 1.4;">
+            <div><strong>WhatsApp:</strong> (21) 98156-8906</div>
+            <div><strong>E-mail:</strong> ademirjunior.contato.dsgnr@gmail.com</div>
+            <div><strong>Disponibilidade:</strong> Imediata (PJ / CLT / Remoto)</div>
+            <div><strong>Localização:</strong> Rio de Janeiro, RJ (Remoto / Presencial)</div>
+          </div>
+        </div>
+
+        <!-- Stack de Tecnologias -->
+        <div style="margin-bottom: 14px; padding: 8px 10px; background: #dcdcdc; border: 1px solid #999;">
+          <div style="font-size: 11px; font-weight: bold; color: #444; margin-bottom: 5px; text-transform: uppercase;">
+            Competências Centrais em Produção:
+          </div>
+          <div>
+            <span class="win-tag">Python & Flask</span>
+            <span class="win-tag">FastAPI & WebSockets</span>
+            <span class="win-tag">PyMuPDF / ReportLab</span>
+            <span class="win-tag">Pandas & OpenPyXL</span>
+            <span class="win-tag">SQLite Local (ACID)</span>
+            <span class="win-tag">Offline-First Resiliente</span>
+            <span class="win-tag">UI/UX Retrô & Moderno</span>
+          </div>
+        </div>
+
+        <!-- Botões de Ação Rápida -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;">
+          <a href="https://wa.me/5521981568906" target="_blank" class="win-btn" style="min-width: 160px; height: 34px;">
+            <img src="assets/icons/keys-0.png" style="width: 16px; height: 16px;" alt="">
+            Falar no WhatsApp
+          </a>
+          <button class="win-btn" style="min-width: 140px; height: 34px;" onclick="openWindow('win-projects-folder')">
+            <img src="assets/icons/briefcase-0.png" style="width: 16px; height: 16px;" alt="">
+            Ver Projetos
+          </button>
+          <button class="win-btn" style="min-width: 130px; height: 34px;" onclick="openGame('pinball')">
+            <img src="assets/icons/game_pinball.png" style="width: 16px; height: 16px;" alt="">
+            Jogar Pinball
+          </button>
+        </div>
+
+      </div>
+
+      <div class="win-statusbar">
+        <div class="win-statusbar-part">Status: Sistema 100% operacional</div>
+        <div class="win-statusbar-part" style="text-align: right;">Edição Especial Windows 95</div>
+      </div>
+    </div>
+
+    <!-- JANELA 2: PASTA MEUS PROJETOS (EXPLORER) -->
+    <div id="win-projects-folder" class="win-window" style="width: 600px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/directory_closed-4.png" alt="">
+          <span>C:\Projetos_Ademir_Junior</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-projects-folder')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-projects-folder')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-projects-folder')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item"><u>A</u>rquivo</span>
+        <span class="win-menu-item"><u>E</u>ditar</span>
+        <span class="win-menu-item"><u>E</u>xibir</span>
+        <span class="win-menu-item"><u>A</u>juda</span>
+      </div>
+
+      <div class="explorer-grid">
+        <div class="explorer-item" ondblclick="openProject('codecon')" onclick="openProject('codecon')">
+          <img src="assets/icons/computer_explorer-4.png" alt="CODECON">
+          <span>RELATORIO.EXE (CODECON)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openProject('cmsg_eleicao')" onclick="openProject('cmsg_eleicao')">
+          <img src="assets/icons/windows-0.png" alt="Eleição Mesa Diretora">
+          <span>TELAO_CMSG.EXE (Mesa Diretora)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openProject('cmsg_pdfkit')" onclick="openProject('cmsg_pdfkit')">
+          <img src="assets/icons/write_wordpad-0.png" alt="CMSGPDFKit">
+          <span>PDFKIT.EXE (CMSGPDFKit)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openProject('cmsg_cloud')" onclick="openProject('cmsg_cloud')">
+          <img src="assets/icons/network_drive_world-0.png" alt="CMSG Cloud">
+          <span>CLOUD.EXE (CMSG Cloud)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openProject('estoque_remedios')" onclick="openProject('estoque_remedios')">
+          <img src="assets/icons/gears-0.png" alt="Estoque Remédios">
+          <span>FARMACIA.EXE (Estoque Remédios)</span>
+        </div>
+      </div>
+
+      <div class="win-statusbar">
+        <div class="win-statusbar-part">5 objeto(s)</div>
+        <div class="win-statusbar-part" style="text-align: right;">Sistemas em Produção</div>
+      </div>
+    </div>
+
+    <!-- JANELA 3: VISUALIZADOR DETALHADO DO PROJETO -->
+    <div id="win-project-viewer" class="win-window" style="width: 740px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/computer_explorer-4.png" alt="">
+          <span class="project-title">Visualizador de Projeto</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-project-viewer')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-project-viewer')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-project-viewer')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item" onclick="closeWindow('win-project-viewer')"><u>V</u>oltar</span>
+        <span class="win-menu-item"><a class="project-wa-btn" href="#" target="_blank" style="color: inherit; text-decoration: none;"><u>F</u>alar no WhatsApp</a></span>
+      </div>
+
+      <div style="padding: 10px; background: #c0c0c0; overflow-y: auto; max-height: calc(85vh - 70px);">
+        
+        <!-- Mockup Display -->
+        <div class="mockup-frame">
+          <img src="" class="project-mockup" alt="Mockup">
+        </div>
+
+        <!-- Descrição e Métricas -->
+        <div style="background: #ffffff; padding: 12px 14px; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #ffffff; border-bottom: 2px solid #ffffff; margin-bottom: 8px;">
+          <div class="project-header-title" style="font-size: 14.5px; font-weight: bold; color: #000080; margin-bottom: 2px;"></div>
+          <div class="project-subtitle" style="font-size: 11.5px; color: #555; margin-bottom: 8px;"></div>
+          <p class="project-description" style="font-size: 13px; line-height: 1.5; color: #222; margin-bottom: 12px;"></p>
+          
+          <div class="project-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 10px;"></div>
+          
+          <div class="project-tags"></div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <a href="#" target="_blank" class="win-btn project-wa-btn" style="min-width: 260px; font-weight: bold; color: #000080; padding: 6px 14px;">
+            <img src="assets/icons/keys-0.png" style="width: 14px; height: 14px;" alt="">
+            Falar sobre este projeto no WhatsApp
+          </a>
+        </div>
+
+      </div>
+
+      <div class="win-statusbar">
+        <div class="win-statusbar-part">Status: Homologado & Ativo</div>
+        <div class="win-statusbar-part" style="text-align: right;">Ademir Júnior • Engenharia de Software</div>
+      </div>
+    </div>
+
+    <!-- JANELA 4: PASTA JOGOS RETRÔ (EXPLORER) -->
+    <div id="win-games-folder" class="win-window" style="width: 520px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/directory_closed-4.png" alt="">
+          <span>C:\Jogos_Classicos</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-games-folder')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-games-folder')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-games-folder')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item"><u>A</u>rquivo</span>
+        <span class="win-menu-item"><u>E</u>xibir</span>
+        <span class="win-menu-item"><u>A</u>juda</span>
+      </div>
+
+      <div class="explorer-grid">
+        <div class="explorer-item" ondblclick="openGame('pinball')" onclick="openGame('pinball')">
+          <img src="assets/icons/game_pinball.png" alt="Pinball">
+          <span>PINBALL.EXE (3D Pinball)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openGame('minesweeper')" onclick="openGame('minesweeper')">
+          <img src="assets/icons/game_mine.png" alt="Campo Minado">
+          <span>WINMINE.EXE (Campo Minado)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openGame('solitaire')" onclick="openGame('solitaire')">
+          <img src="assets/icons/game_solitaire.png" alt="Paciência">
+          <span>SOL.EXE (Paciência)</span>
+        </div>
+        <div class="explorer-item" ondblclick="openGame('skifree')" onclick="openGame('skifree')">
+          <img src="assets/icons/world-0.png" alt="SkiFree">
+          <span>SKIFREE.EXE (SkiFree)</span>
+        </div>
+      </div>
+
+      <div class="win-statusbar">
+        <div class="win-statusbar-part">4 jogo(s) antigos</div>
+        <div class="win-statusbar-part" style="text-align: right;">100% Jogáveis no Navegador</div>
+      </div>
+    </div>
+
+    <!-- JANELA 5: 3D PINBALL SPACE CADET -->
+    <div id="win-pinball" class="win-window" style="width: 620px; height: 500px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/game_pinball.png" alt="">
+          <span>3D Pinball for Windows - Space Cadet [WebAssembly 60 FPS]</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-pinball')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-pinball')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-pinball')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item" onclick="openGame('pinball')"><u>N</u>ovo Jogo</span>
+        <span class="win-menu-item" onclick="maximizeWindow('win-pinball')"><u>T</u>ela Cheia</span>
+        <span class="win-menu-item" onclick="closeWindow('win-pinball')"><u>S</u>air [✕]</span>
+      </div>
+
+      <div style="flex: 1; background: #000000; position: relative;">
+        <iframe src="about:blank" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen" title="3D Pinball"></iframe>
+      </div>
+    </div>
+
+    <!-- JANELA 6: CAMPO MINADO (WINMINE.EXE NATIVO) -->
+    <div id="win-minesweeper" class="win-window" style="display: none; width: auto;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/game_mine.png" alt="">
+          <span>Campo Minado - WINMINE.EXE</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-minesweeper')">_</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-minesweeper')">✕</button>
+        </div>
+      </div>
+
+      <div id="minesweeper-container"></div>
+    </div>
+
+    <!-- JANELA 7: PACIÊNCIA (SOL.EXE) -->
+    <div id="win-solitaire" class="win-window" style="width: 720px; height: 520px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/game_solitaire.png" alt="">
+          <span>Paciência - SOL.EXE [Mesa Oficial de Cartas]</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-solitaire')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-solitaire')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-solitaire')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item" onclick="openGame('solitaire')"><u>J</u>ogo Novo</span>
+        <span class="win-menu-item" onclick="maximizeWindow('win-solitaire')"><u>T</u>ela Cheia</span>
+        <span class="win-menu-item" onclick="closeWindow('win-solitaire')"><u>S</u>air [✕]</span>
+      </div>
+
+      <div style="flex: 1; background: #007a3d;">
+        <iframe src="about:blank" style="width: 100%; height: 100%; border: none;" allow="autoplay" title="Paciência"></iframe>
+      </div>
+    </div>
+
+    <!-- JANELA 8: SKIFREE (SKIFREE.EXE) -->
+    <div id="win-skifree" class="win-window" style="width: 640px; height: 480px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/world-0.png" alt="">
+          <span>SkiFree - SKIFREE.EXE [Windows Entertainment Pack]</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-skifree')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-skifree')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-skifree')">✕</button>
+        </div>
+      </div>
+
+      <div style="flex: 1; background: #ffffff;">
+        <iframe src="about:blank" style="width: 100%; height: 100%; border: none;" title="SkiFree"></iframe>
+      </div>
+    </div>
+
+    <!-- JANELA 9: RÁDIO NIGHTWAVE PLAZA (WIDGET OFICIAL PLAZA.ONE) -->
+    <div id="win-cdplayer" class="win-window" style="width: 480px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/plaza_icons/ball.png" alt="Nightwave Plaza">
+          <span>Nightwave Plaza</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-cdplayer')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-cdplayer')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-cdplayer')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>S</u>obre</a></span>
+        <span class="win-menu-item"><a href="https://plaza.one/history" target="_blank" style="color: inherit; text-decoration: none;"><u>H</u>istórico</a></span>
+        <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>M</u>ais Populares</a></span>
+        <span class="win-menu-item"><a href="https://plaza.one" target="_blank" style="color: inherit; text-decoration: none;"><u>A</u>poie-nos</a></span>
+      </div>
+
+      <div style="padding: 8px; background: #c0c0c0;">
+        <div class="win-inset" style="padding: 10px; background: #c0c0c0; display: flex; gap: 12px; align-items: center;">
+          <!-- Artwork da Música (Capinha) -->
+          <div style="width: 124px; height: 124px; min-width: 124px; border: 2px inset #ffffff; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 1px 2px #000;">
+            <img id="plaza-artwork" src="assets/plaza_icons/ball_2x.png" alt="Capa da Música" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          </div>
+
+          <!-- Informações e Controles -->
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; height: 124px;">
+            <div>
+              <div id="plaza-artist" style="font-size: 16px; font-weight: bold; color: #000; font-family: 'Segoe UI', Tahoma, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.2px;">
+                Nightwave Plaza
+              </div>
+              <div id="plaza-title" style="font-size: 13.5px; color: #222; font-family: 'Segoe UI', Tahoma, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                Vaporwave Radio 24/7
+              </div>
+            </div>
+
+            <!-- Timer e Slider de Volume -->
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+              <div class="win-inset" style="background: #c0c0c0; padding: 3px 6px; font-family: 'Consolas', monospace; font-size: 13px; font-weight: bold; color: #000; text-align: center; min-width: 110px;">
+                <span id="plaza-timer">00:00 / 00:00</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px; flex: 1;">
+                <input type="range" id="plaza-vol-slider" min="0" max="1" step="0.01" value="0.25" style="width: 100%; cursor: pointer;">
+                <span style="font-size: 14px; user-select: none;">🔊</span>
+              </div>
+            </div>
+
+            <!-- Botões de Ação estilo Plaza -->
+            <div style="display: flex; gap: 6px; align-items: center; margin-top: 6px;">
+              <button id="plaza-btn-play" class="win-btn" style="min-width: 70px; height: 26px; font-weight: bold;" onclick="toggleRadio()">
+                Tocar
+              </button>
+              <button id="plaza-btn-heart" class="win-btn" style="min-width: 52px; height: 26px; display: flex; align-items: center; justify-content: center; gap: 4px;" onclick="likeCurrentSong()">
+                <img src="assets/plaza_icons/heart_gray.png" id="plaza-heart-icon" style="width: 14px; height: 14px;" alt="">
+                <span id="plaza-reactions">1</span>
+              </button>
+              <a href="https://plaza.one/history" target="_blank" class="win-btn" style="width: 32px; height: 26px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Histórico de Músicas no Plaza.one">
+                <img src="assets/plaza_icons/person.png" style="width: 15px; height: 15px;" alt="">
+              </a>
+              <a href="https://plaza.one" target="_blank" class="win-btn" style="width: 32px; height: 26px; display: flex; align-items: center; justify-content: center; text-decoration: none;" title="Abrir Plaza.one Oficial">
+                <img src="assets/plaza_icons/settings_gear.png" style="width: 15px; height: 15px;" alt="">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="win-statusbar" style="display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; font-size: 11.5px; color: #222;">
+        <span id="plaza-listeners">181 ouvinte(s).</span>
+        <span id="plaza-audio-status" style="color: #008000; font-weight: bold; font-size: 11px;">● AO VIVO</span>
+      </div>
+    </div>
+
+    <!-- JANELA 10: BLOCO DE NOTAS (SOBRE MIM) -->
+    <div id="win-notepad" class="win-window" style="width: 580px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/notepad_file-0.png" alt="">
+          <span>SOBRE_MIM.TXT - Bloco de Notas</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-notepad')">_</button>
+          <button class="ctrl-btn" onclick="maximizeWindow('win-notepad')">□</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-notepad')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item"><u>A</u>rquivo</span>
+        <span class="win-menu-item"><u>E</u>ditar</span>
+        <span class="win-menu-item"><u>F</u>ormatar</span>
+        <span class="win-menu-item"><u>A</u>juda</span>
+      </div>
+
+      <div class="win-inset" style="padding: 14px; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.5; color: #111; overflow-y: auto; max-height: 380px;">
+// =================================================================<br>
+// ADEMIR JÚNIOR - DESENVOLVEDOR FULL STACK & ENGENHEIRO DE DADOS<br>
+// =================================================================<br><br>
+Olá! Sou o Ademir Júnior, desenvolvedor focado na construção de sistemas críticos de alta disponibilidade, arquiteturas Offline-First e automações que eliminam trabalho manual.<br><br>
+📌 PRINCIPAIS COMPETÊNCIAS:<br>
+• Backend: Python, Flask, FastAPI, Django, WebSockets assíncronos.<br>
+• Dados & Automação: Pandas, OpenPyXL, PyMuPDF, Scrapy, BeautifulSoup, SQLite (ACID), PostgreSQL.<br>
+• Arquitetura: Sistemas Offline-First, sincronização de telões em tempo real (<30ms), automação documental ABNT.<br><br>
+📞 CONTATOS DIRETOS:<br>
+• WhatsApp: (21) 98156-8906<br>
+• E-mail: ademirjunior.contato.dsgnr@gmail.com<br>
+• Disponibilidade: Imediata para Contratos (PJ / CLT / Remoto)<br>
+• Localização: Rio de Janeiro, RJ (Disponível para contratos Remotos ou Presenciais)
+      </div>
+    </div>
+
+    <!-- JANELA 11: MEU COMPUTADOR -->
+    <div id="win-mycomputer" class="win-window" style="width: 480px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/computer_explorer-5.png" alt="">
+          <span>Meu Computador</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-mycomputer')">_</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-mycomputer')">✕</button>
+        </div>
+      </div>
+
+      <div class="win-menubar">
+        <span class="win-menu-item"><u>A</u>rquivo</span>
+        <span class="win-menu-item"><u>E</u>xibir</span>
+        <span class="win-menu-item"><u>A</u>juda</span>
+      </div>
+
+      <div class="explorer-grid">
+        <div class="explorer-item" onclick="openWindow('win-projects-folder')">
+          <img src="assets/icons/hard_disk_drive-0.png" alt="Drive C:">
+          <span>Disco Local (C:) [Sistemas]</span>
+        </div>
+        <div class="explorer-item" onclick="openWindow('win-games-folder')">
+          <img src="assets/icons/cd_drive-4.png" alt="Drive D:">
+          <span>CD-ROM (D:) [Jogos]</span>
+        </div>
+        <div class="explorer-item" onclick="openWindow('win-notepad')">
+          <img src="assets/icons/floppy_drive_3_5-0.png" alt="Drive A:">
+          <span>Disquete 3½ (A:) [Currículo]</span>
+        </div>
+      </div>
+
+      <div class="win-statusbar">
+        <div class="win-statusbar-part">3 unidade(s) de disco</div>
+        <div class="win-statusbar-part" style="text-align: right;">Pronto</div>
+      </div>
+    </div>
+
+    <!-- JANELA 12: AMBIENTE DE REDE -->
+    <div id="win-network" class="win-window" style="width: 480px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/network_normal_two_pcs-0.png" alt="">
+          <span>Ambiente de Rede</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="minimizeWindow('win-network')">_</button>
+          <button class="ctrl-btn" onclick="closeWindow('win-network')">✕</button>
+        </div>
+      </div>
+      <div style="padding: 16px; background: #c0c0c0;">
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+          <img src="assets/icons/network_drive_world-0.png" style="width: 36px; height: 36px;" alt="">
+          <div>
+            <div style="font-weight: bold; font-size: 13px; color: #000080;">Rede Local e Nuvem Institucional</div>
+            <div style="font-size: 11.5px; color: #444;">Protocolo WebDAV sobre TLS 1.3 | CMSG Cloud Storage</div>
+          </div>
+        </div>
+        <button class="win-btn" onclick="openProject('cmsg_cloud'); closeWindow('win-network')">
+          Abrir Projeto CMSG Cloud
+        </button>
+      </div>
+    </div>
+
+    <!-- JANELA 13: LIXEIRA -->
+    <div id="win-recycle" class="win-window" style="width: 400px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/recycle_bin_empty-4.png" alt="">
+          <span>Lixeira</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="closeWindow('win-recycle')">✕</button>
+        </div>
+      </div>
+      <div style="padding: 20px; background: #ffffff; text-align: center; color: #666;">
+        <img src="assets/icons/recycle_bin_empty-4.png" style="width: 48px; height: 48px; margin-bottom: 8px;" alt="">
+        <div>A lixeira está vazia. Nenhum bug encontrado!</div>
+      </div>
+    </div>
+
+    <!-- JANELA 14: DIÁLOGO DESLIGAR O COMPUTADOR -->
+    <div id="win-shutdown" class="win-window" style="width: 360px; display: none;">
+      <div class="win-titlebar">
+        <div class="win-titlebar-left">
+          <img src="assets/icons/shut_down_normal-0.png" alt="">
+          <span>Desligar o Windows</span>
+        </div>
+        <div class="win-titlebar-controls">
+          <button class="ctrl-btn" onclick="closeWindow('win-shutdown')">✕</button>
+        </div>
+      </div>
+
+      <div style="padding: 16px; background: #c0c0c0;">
+        <div style="display: flex; gap: 14px; margin-bottom: 14px;">
+          <img src="assets/icons/shut_down_normal-0.png" style="width: 36px; height: 36px;" alt="">
+          <div>
+            <div style="font-size: 12.5px; font-weight: bold; margin-bottom: 8px;">O que você deseja que o computador faça?</div>
+            <label style="display: block; margin-bottom: 4px; font-size: 12px;">
+              <input type="radio" name="shutdown_opt" checked> Desligar o computador
+            </label>
+            <label style="display: block; margin-bottom: 4px; font-size: 12px;">
+              <input type="radio" name="shutdown_opt"> Reiniciar o computador
+            </label>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 6px;">
+          <button class="win-btn" style="min-width: 70px;" onclick="triggerShutdown()">Sim</button>
+          <button class="win-btn" style="min-width: 70px;" onclick="closeWindow('win-shutdown')">Não</button>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- Fim #desktop -->
+
+  <!-- ======================================================================
+       OVERLAY DE DESLIGAMENTO TOTAL
+       ====================================================================== -->
+  <div id="shutdown-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; z-index: 1000000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ff8800; font-family: 'W95FA', 'Courier New', monospace;">
+    <div style="font-size: 32px; font-weight: bold; margin-bottom: 12px;">Seu computador já pode ser desligado com segurança.</div>
+    <div style="font-size: 16px; color: #888; margin-bottom: 24px;">Windows 95 Edition • Ademir Júnior</div>
+    <button class="win-btn" style="padding: 8px 18px; font-size: 14px;" onclick="restartSystem()">Ligar Novamente</button>
+  </div>
+
+  <!-- ======================================================================
+       TASKBAR (BARRA DE TAREFAS WINDOWS 95)
+       ====================================================================== -->
+  <div id="taskbar">
+    <div class="taskbar-left">
+      <div id="btn-start">
+        <img src="assets/icons/windows-0.png" alt="Logo">
+        <span>Iniciar</span>
+      </div>
+      <div class="taskbar-divider"></div>
+      <div id="task-list"></div>
+    </div>
+
+    <div class="taskbar-tray">
+      <div id="tray-radio-btn" class="win-inset" style="padding: 1px 6px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; background: #c0c0c0;" onclick="toggleRadio()" title="Rádio Nightwave Plaza (Clique para Pausar/Tocar)">
+        <img src="assets/plaza_icons/ball.png" style="width: 14px; height: 14px;" alt="">
+        <span id="tray-radio-dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #00aa00;"></span>
+        <span>Plaza.one</span>
+      </div>
+      <img src="assets/icons/game_mine.png" alt="Easter Egg" title="Campo Minado" onclick="openGame('minesweeper')">
+      <img src="assets/icons/loudspeaker_rays-0.png" alt="Volume" title="Áudio Ativo" onclick="openWindow('win-cdplayer')">
+      <span id="tray-clock">08:00 PM</span>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MENU INICIAR POP-UP
+       ====================================================================== -->
+  <div id="start-menu">
+    <div class="start-menu-sidebar">
+      <div class="start-menu-sidebar-text">Windows 95</div>
+    </div>
+    
+    <div class="start-menu-items">
+      <div class="start-menu-item" onclick="openWindow('win-projects-folder'); document.getElementById('start-menu').classList.remove('open')">
+        <img src="assets/icons/briefcase-0.png" alt="">
+        <span><u>P</u>rojetos em Produção</span>
+      </div>
+      <div class="start-menu-item" onclick="openWindow('win-games-folder'); document.getElementById('start-menu').classList.remove('open')">
+        <img src="assets/icons/game_pinball.png" alt="">
+        <span><u>J</u>ogos Antigos</span>
+      </div>
+      <div class="start-menu-item" onclick="openWindow('win-notepad'); document.getElementById('start-menu').classList.remove('open')">
+        <img src="assets/icons/notepad_file-0.png" alt="">
+        <span><u>S</u>obre Ademir Júnior</span>
+      </div>
+      <div class="start-menu-item" onclick="openWindow('win-cdplayer'); document.getElementById('start-menu').classList.remove('open')">
+        <img src="assets/plaza_icons/ball.png" alt="">
+        <span><u>N</u>ightwave Plaza</span>
+      </div>
+      <div class="start-menu-divider"></div>
+      <a href="https://wa.me/5521981568906" target="_blank" class="start-menu-item" style="text-decoration: none; color: inherit;">
+        <img src="assets/icons/keys-0.png" alt="">
+        <span>Falar no <u>W</u>hatsApp</span>
+      </a>
+      <div class="start-menu-divider"></div>
+      <div class="start-menu-item" onclick="openWindow('win-shutdown'); document.getElementById('start-menu').classList.remove('open')">
+        <img src="assets/icons/shut_down_normal-0.png" alt="">
+        <span><u>D</u>esligar o Computador...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="games/minesweeper/minesweeper.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
